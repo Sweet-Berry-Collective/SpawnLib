@@ -1,7 +1,7 @@
 package dev.sweetberry.spawnlib.neoforge;
 
-import dev.sweetberry.spawnlib.impl.Platform;
-import dev.sweetberry.spawnlib.impl.PlatformHelper;
+import dev.sweetberry.spawnlib.internal.Platform;
+import dev.sweetberry.spawnlib.internal.PlatformHelper;
 
 public class NeoForgePlatformHelper implements PlatformHelper {
     @Override

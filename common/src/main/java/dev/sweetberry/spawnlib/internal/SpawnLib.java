@@ -1,4 +1,4 @@
-package dev.sweetberry.spawnlib.impl;
+package dev.sweetberry.spawnlib.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

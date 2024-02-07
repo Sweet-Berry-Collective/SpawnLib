@@ -1,4 +1,4 @@
-package dev.sweetberry.spawnlib.impl;
+package dev.sweetberry.spawnlib.internal;
 
 public enum Platform {
     FABRIC("Fabric"),
