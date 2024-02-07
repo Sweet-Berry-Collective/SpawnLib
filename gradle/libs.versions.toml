@@ -1,0 +1,48 @@
+[versions]
+# Common
+mixin = "0.8.5"
+mixin_extras = "0.3.2"
+minecraft = "1.20.4"
+range_minecraft = "[1.20.4,1.21)"
+
+# Fabric
+fabric_loader = "0.15.3"
+fabric_api = "0.92.1+1.20.4"
+
+# NeoForge
+neoforge = "20.4.83-beta"
+range_neoforge = "[2,)"
+
+[libraries]
+# Common
+mixin = { module = "org.spongepowered:mixin", version.ref = "mixin" }
+mixin_extras = { module = "io.github.llamalad7:mixinextras-common", version.ref = "mixin_extras" }
+
+# Fabric
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+
+fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
+fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
+
+# NeoForge
+neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
+
+[bundles]
+# Common
+mixin = [ "mixin", "mixin_extras" ]
+
+# Fabric
+fabric = [ "fabric_loader", "fabric_api" ]
+
+# NeoForge
+
+[plugins]
+# Common
+vanillagradle = { id = "org.spongepowered.gradle.vanilla", version = "0.2.1-SNAPSHOT" }
+idea_ext = { id = "org.jetbrains.gradle.plugin.idea-ext", version = "1.1.7" }
+
+# Fabric
+loom = { id = "fabric-loom", version = "1.4-SNAPSHOT" }
+
+# NeoForge
+neogradle = { id = "net.neoforged.gradle.userdev", version = "7.0.88" }
