@@ -2,7 +2,7 @@ package dev.sweetberry.spawnlib.internal;
 
 public enum Platform {
     FABRIC("Fabric"),
-    NEO_FORGE("NeoForge");
+    NEOFORGE("NeoForge");
 
     public final String name;
 
