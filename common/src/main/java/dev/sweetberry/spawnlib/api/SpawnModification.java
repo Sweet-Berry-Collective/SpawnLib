@@ -1,6 +1,7 @@
 package dev.sweetberry.spawnlib.api;
 
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -10,6 +11,8 @@ public interface SpawnModification {
     void toTag(Tag nbt);
 
     void fromTag(Tag nbt);
+
+    ResourceLocation getId();
 
     default boolean isValidForSpawning(SpawnContext context, Level level, Vec3 pos) {
         var box = context.getPlayerBoundingBox(pos);
