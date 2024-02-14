@@ -32,4 +32,9 @@ public interface SpawnModification {
     default boolean setSpawnIfValid(SpawnContext context, Vec3 pos) {
         return setSpawnIfValid(context, context.getLevel(), pos);
     }
+
+    @FunctionalInterface
+    interface Provider {
+        SpawnModification provide();
+    }
 }
