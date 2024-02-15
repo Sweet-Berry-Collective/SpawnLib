@@ -2,6 +2,8 @@ package dev.sweetberry.spawnlib.api;
 
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.mixin.Accessor_Entity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -12,14 +14,13 @@ import net.minecraft.world.phys.Vec3;
  * Used for figuring out where they should spawn
  * */
 public class SpawnContext {
-    private final Player player;
+    private final ServerPlayer player;
     private Vec3 spawnPos = Vec3.ZERO;
-    private Level level;
-    private SpawnPriority priority;
+    private ServerLevel level;
 
-    public SpawnContext(Player player) {
+    public SpawnContext(ServerPlayer player) {
         this.player = player;
-        this.level = player.level().getServer().overworld();
+        reset();
     }
 
     /**
@@ -27,7 +28,7 @@ public class SpawnContext {
      * <br>
      * TODO: Keep track of which were present and which failed, so we can provide chat feedback
      * */
-    public static SpawnContext getSpawn(Player player) {
+    public static SpawnContext getSpawn(ServerPlayer player) {
         var helper = SpawnLib.getHelper();
         var context = new SpawnContext(player);
 
@@ -35,13 +36,20 @@ public class SpawnContext {
         if (spawn != null && spawn.modify(context))
             return context;
 
+        context.reset();
         spawn = helper.getGlobalSpawn(player);
         if (spawn != null && spawn.modify(context))
             return context;
 
+        context.reset();
         spawn = helper.getGlobalSpawn(player.getServer());
         spawn.modify(context);
         return context;
+    }
+
+    private void reset() {
+        spawnPos = Vec3.ZERO;
+        level = player.getServer().overworld();
     }
 
     /**
@@ -54,7 +62,7 @@ public class SpawnContext {
     /**
      * Gets the player
      * */
-    public Player getPlayer() {
+    public ServerPlayer getPlayer() {
         return player;
     }
 
@@ -75,14 +83,14 @@ public class SpawnContext {
     /**
      * Gets the current level for spawning
      * */
-    public Level getLevel() {
+    public ServerLevel getLevel() {
         return level;
     }
 
     /**
      * Sets the level for spawning
      * */
-    public void setLevel(Level level) {
+    public void setLevel(ServerLevel level) {
         this.level = level;
     }
 }

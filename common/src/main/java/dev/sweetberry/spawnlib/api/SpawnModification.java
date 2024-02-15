@@ -2,6 +2,7 @@ package dev.sweetberry.spawnlib.api;
 
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -14,7 +15,7 @@ public interface SpawnModification {
 
     ResourceLocation getId();
 
-    default boolean isValidForSpawning(SpawnContext context, Level level, Vec3 pos) {
+    default boolean isValidForSpawning(SpawnContext context, ServerLevel level, Vec3 pos) {
         var box = context.getPlayerBoundingBox(pos);
         // This might not be the right method to call, we'll figure that out later.
         return level.noCollision(box);
@@ -24,7 +25,7 @@ public interface SpawnModification {
         return isValidForSpawning(context, context.getLevel(), pos);
     }
 
-    default boolean setSpawnIfValid(SpawnContext context, Level level, Vec3 pos) {
+    default boolean setSpawnIfValid(SpawnContext context, ServerLevel level, Vec3 pos) {
         if (!isValidForSpawning(context, level, pos))
             return false;
         context.setLevel(level);
@@ -36,7 +37,7 @@ public interface SpawnModification {
         return setSpawnIfValid(context, context.getLevel(), pos);
     }
 
-    default Vec3 findLowestValidSpawn(SpawnContext context, Level level, Vec3 pos) {
+    default Vec3 findLowestValidSpawn(SpawnContext context, ServerLevel level, Vec3 pos) {
         while (true) {
             var currValid = isValidForSpawning(context, level, pos);
             var downValid = !isValidForSpawning(context, level, pos.subtract(0, 1, 0));
