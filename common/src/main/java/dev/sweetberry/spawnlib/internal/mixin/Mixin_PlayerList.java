@@ -1,35 +1,39 @@
 package dev.sweetberry.spawnlib.internal.mixin;
 
-import com.mojang.authlib.GameProfile;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.sweetberry.spawnlib.api.SpawnContext;
+import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.server.players.GameProfileCache;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.storage.LevelData;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Mixin(PlayerList.class)
 public abstract class Mixin_PlayerList {
+    @Unique
+    private SpawnContext spawnlib$spawn;
+
     @Shadow @Final
     private List<ServerPlayer> players;
 
@@ -45,17 +49,15 @@ public abstract class Mixin_PlayerList {
     @Shadow
     public abstract void sendPlayerPermissionLevel(ServerPlayer $$0);
 
-    // Why does mixin require you to include captures you don't need??? That's stupid.
     @Inject(
             method = "placeNewPlayer",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;<init>(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/server/network/CommonListenerCookie;)V",
                     shift = At.Shift.AFTER
-            ),
-            locals = LocalCapture.CAPTURE_FAILSOFT
+            )
     )
-    private void spawnlib$setSpawn(Connection $$0, ServerPlayer player, CommonListenerCookie $$2, CallbackInfo ci, GameProfile $$3, GameProfileCache $$4, String $$7, CompoundTag playerData, ResourceKey $$9, ServerLevel $$10, ServerLevel $$12, String $$13, LevelData $$14) {
+    private void spawnlib$setSpawn(Connection $$0, ServerPlayer player, CommonListenerCookie $$2, CallbackInfo ci, @Local CompoundTag playerData) {
         if (playerData != null)
             return;
         var spawn = SpawnContext.getSpawn(player);
@@ -64,49 +66,107 @@ public abstract class Mixin_PlayerList {
         player.teleportTo(level, spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);
     }
 
-    /**
-     * @author Oliver-makes-code
-     * @reason We're replacing this with our own resolver
-     */
-    @Overwrite
-    public ServerPlayer respawn(ServerPlayer playerToRespawn, boolean stillAlive) {
-        var spawn = SpawnContext.getSpawn(playerToRespawn);
-        var spawnPos = spawn.getSpawnPos();
-        var level = spawn.getLevel();
-        var levelData = level.getLevelData();
+    @Inject(
+            method = "respawn",
+            at = @At("HEAD")
+    )
+    private void spawnlib$calculateSpawn(ServerPlayer player, boolean stillAlive, CallbackInfoReturnable<ServerPlayer> cir) {
+        spawnlib$spawn = SpawnContext.getSpawn(player);
+    }
 
-        // Remove old player
-        players.remove(playerToRespawn);
-        playerToRespawn.serverLevel().removePlayerImmediately(playerToRespawn, Entity.RemovalReason.DISCARDED);
+    @Inject(
+            method = "respawn",
+            at = @At("TAIL")
+    )
+    private void spawnlib$clearSpawn(ServerPlayer player, boolean stillAlive, CallbackInfoReturnable<ServerPlayer> cir) {
+        spawnlib$spawn = null;
+    }
 
-        // Create new player
-        var player = new ServerPlayer(server, spawn.getLevel(), playerToRespawn.getGameProfile(), playerToRespawn.clientInformation());
-        var connection = playerToRespawn.connection;
-        player.connection = connection;
-        player.restoreFrom(playerToRespawn, stillAlive);
-        player.setId(playerToRespawn.getId());
-        player.setMainArm(playerToRespawn.getMainArm());
-        for (var tag : playerToRespawn.getTags())
-            player.addTag(tag);
+    @WrapOperation(
+            method = "respawn",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/player/Player;findRespawnPositionAndUseSpawnBlock(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;FZZ)Ljava/util/Optional;"
+            )
+    )
+    private Optional<Vec3> spawnlib$setSpawnLocation(ServerLevel $$0, BlockPos $$1, float $$2, boolean $$3, boolean $$4, Operation<Optional<Vec3>> original) {
+        if (spawnlib$spawn == null)
+            return original.call($$0, $$1, $$2, $$3, $$4);
+        return Optional.of(spawnlib$spawn.getSpawnPos());
+    }
 
-        // Notify of missing block
-        if (spawn.wasObstructed())
-            connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.NO_RESPAWN_BLOCK_AVAILABLE, 0.0F));
+    @WrapOperation(
+            method = "respawn",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/Optional;empty()Ljava/util/Optional;"
+            )
+    )
+    private Optional<Vec3> spawnlib$setSpawnLocation(Operation<Optional<Vec3>> original) {
+        if (spawnlib$spawn == null)
+            return original.call();
+        return Optional.of(spawnlib$spawn.getSpawnPos());
+    }
 
-        // Send updates
-        connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(spawn.getLevel()), (byte) (stillAlive ? 1 : 0)));
+    @WrapOperation(
+            method = "respawn",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/level/ServerLevel;noCollision(Lnet/minecraft/world/entity/Entity;)Z"
+            )
+    )
+    private boolean spawnlib$setTrue(ServerLevel instance, Entity entity, Operation<Boolean> original) {
+        if (spawnlib$spawn == null)
+            return original.call(instance, entity);
+        if (!(entity instanceof ServerPlayer player))
+            return original.call(instance, entity);
+        var spawnPos = spawnlib$spawn.getSpawnPos();
+        var level = spawnlib$spawn.getLevel();
+        SpawnLib.LOGGER.info("test");
         player.teleportTo(level, spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);
-        connection.send(new ClientboundSetDefaultSpawnPositionPacket(BlockPos.containing(spawnPos.x, spawnPos.y, spawnPos.z), 0));
-        connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
-        connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
-        sendLevelInfo(player, level);
-        sendPlayerPermissionLevel(player);
-        level.addRespawnedPlayer(player);
-        players.add(player);
-        playersByUUID.put(player.getUUID(), player);
-        player.initInventoryMenu();
-        player.setHealth(player.getHealth());
+        return true;
+    }
 
-        return player;
+    @WrapOperation(
+            method = "respawn",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"
+            )
+    )
+    private ServerLevel spawnlib$getLevel(MinecraftServer instance, ResourceKey<Level> $$0, Operation<ServerLevel> original) {
+        if (spawnlib$spawn == null)
+            return original.call(instance, $$0);
+        return spawnlib$spawn.getLevel();
+    }
+
+    @WrapOperation(
+            method = "respawn",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/Optional;isPresent()Z",
+                    ordinal = 1
+            )
+    )
+    private boolean spawnlib$setFalse(Optional<Vec3> instance, Operation<Boolean> original) {
+        if (spawnlib$spawn == null)
+            return original.call(instance);
+        return false;
+    }
+
+    @WrapOperation(
+            method = "respawn",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;teleport(DDDFF)V"
+            )
+    )
+    private void spawnlib$setSpawn(ServerGamePacketListenerImpl instance, double $$0, double $$1, double $$2, float $$3, float $$4, Operation<Void> original) {
+        if (spawnlib$spawn == null) {
+            original.call(instance, $$0, $$1, $$2, $$3, $$4);
+            return;
+        }
+        var pos = spawnlib$spawn.getSpawnPos();
+        instance.teleport(pos.x, pos.y, pos.z, 0, 0);
     }
 }
