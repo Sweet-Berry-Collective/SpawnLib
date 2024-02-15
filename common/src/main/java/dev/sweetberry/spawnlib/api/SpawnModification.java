@@ -3,6 +3,8 @@ package dev.sweetberry.spawnlib.api;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -51,6 +53,21 @@ public interface SpawnModification {
                 // Move down to check block below
                 pos = pos.subtract(0, 1, 0);
         }
+    }
+
+    default Vec3 randomCircularOffset(SpawnContext context, RandomSource random, Vec3 center, double radius) {
+        var distance = radius * Math.sqrt(random.nextDouble());
+        var angle = random.nextDouble() * Mth.TWO_PI;
+        var deltaX = distance * Math.cos(angle);
+        var deltaZ = distance * Math.sin(angle);
+        return center.add(deltaX, 0, deltaZ);
+    }
+
+    default Vec3 randomSquareOffset(SpawnContext context, RandomSource random, Vec3 center, double radius) {
+        var diameter = 2 * radius;
+        var deltaX = random.nextDouble() * diameter - radius;
+        var deltaZ = random.nextDouble() * diameter - radius;
+        return center.add(deltaX, 0, deltaZ);
     }
 
     @FunctionalInterface
