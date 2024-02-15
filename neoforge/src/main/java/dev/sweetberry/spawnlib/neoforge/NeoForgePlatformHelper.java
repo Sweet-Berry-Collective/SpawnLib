@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class NeoForgePlatformHelper implements PlatformHelper {
     @Override
@@ -16,17 +17,20 @@ public class NeoForgePlatformHelper implements PlatformHelper {
     }
 
     @Override
+    @Nullable
     public SpawnModification getLocalSpawn(ServerPlayer player) {
         return null;
     }
 
     @Override
+    @Nullable
     public SpawnModification getGlobalSpawn(ServerPlayer player) {
         return null;
     }
 
     @Override
-    public @NotNull SpawnModification getGlobalSpawn(MinecraftServer server) {
+    @NotNull
+    public SpawnModification getGlobalSpawn(MinecraftServer server) {
         return null;
     }
 }

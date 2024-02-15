@@ -4,10 +4,9 @@ import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.mixin.Accessor_Entity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds data about the spawn point of the player
@@ -28,6 +27,7 @@ public class SpawnContext {
      * <br>
      * TODO: Keep track of which were present and which failed, so we can provide chat feedback
      * */
+    @NotNull
     public static SpawnContext getSpawn(ServerPlayer player) {
         var helper = SpawnLib.getHelper();
         var context = new SpawnContext(player);
