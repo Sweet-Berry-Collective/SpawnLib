@@ -36,6 +36,22 @@ public interface SpawnModification {
         return setSpawnIfValid(context, context.getLevel(), pos);
     }
 
+    default Vec3 findLowestValidSpawn(SpawnContext context, Level level, Vec3 pos) {
+        while (true) {
+            var currValid = isValidForSpawning(context, level, pos);
+            var downValid = !isValidForSpawning(context, level, pos.subtract(0, 1, 0));
+            if (currValid && !downValid)
+                // This is the lowest valid spot.
+                return pos;
+            if (!currValid)
+                // Move up to check block above
+                pos = pos.add(0, 1, 0);
+            else // Down is always valid here
+                // Move down to check block below
+                pos = pos.subtract(0, 1, 0);
+        }
+    }
+
     @FunctionalInterface
     interface Provider {
         SpawnModification provide();

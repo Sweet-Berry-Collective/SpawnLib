@@ -3,8 +3,10 @@ package dev.sweetberry.spawnlib.neoforge;
 import dev.sweetberry.spawnlib.api.SpawnModification;
 import dev.sweetberry.spawnlib.internal.Platform;
 import dev.sweetberry.spawnlib.internal.PlatformHelper;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class NeoForgePlatformHelper implements PlatformHelper {
     @Override
@@ -23,7 +25,7 @@ public class NeoForgePlatformHelper implements PlatformHelper {
     }
 
     @Override
-    public SpawnModification getGlobalSpawn(Level level) {
+    public @NotNull SpawnModification getGlobalSpawn(MinecraftServer server) {
         return null;
     }
 }

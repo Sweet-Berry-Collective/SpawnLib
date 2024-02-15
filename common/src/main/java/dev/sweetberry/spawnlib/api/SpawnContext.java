@@ -28,14 +28,18 @@ public class SpawnContext {
      * TODO: Keep track of which were present and which failed, so we can provide chat feedback
      * */
     public static SpawnContext getSpawn(Player player) {
+        var helper = SpawnLib.getHelper();
         var context = new SpawnContext(player);
-        var spawn = SpawnLib.getHelper().getLocalSpawn(player);
+
+        var spawn = helper.getLocalSpawn(player);
         if (spawn != null && spawn.modify(context))
             return context;
-        spawn = SpawnLib.getHelper().getGlobalSpawn(player);
+
+        spawn = helper.getGlobalSpawn(player);
         if (spawn != null && spawn.modify(context))
             return context;
-        spawn = SpawnLib.getHelper().getGlobalSpawn(player.level());
+
+        spawn = helper.getGlobalSpawn(player.getServer());
         spawn.modify(context);
         return context;
     }
