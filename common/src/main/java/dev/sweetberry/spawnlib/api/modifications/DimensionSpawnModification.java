@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
 public class DimensionSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("dimension");
@@ -26,8 +25,9 @@ public class DimensionSpawnModification implements SpawnModification {
     @Override
     public boolean modify(SpawnContext context) {
         var level = context.getLevel(dimension);
+        context.setLevel(level);
 
-        context.setSpawnPos(findLowestValidSpawn(context, level, Vec3.ZERO));
+        context.setSpawnPos(findLowestValidSpawn(context, level, randomSquareOffset(context, level.random, level.getSharedSpawnPos().getCenter(), context.getServer().getSpawnRadius(level))));
         return true;
     }
 

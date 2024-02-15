@@ -26,7 +26,9 @@ public interface SpawnModification {
 
     static SpawnModification readFromTag(CompoundTag tag) {
         // TODO
-        return new DimensionSpawnModification();
+        var spawn = new DimensionSpawnModification();
+        spawn.fromTag(tag);
+        return spawn;
     }
 
     /**

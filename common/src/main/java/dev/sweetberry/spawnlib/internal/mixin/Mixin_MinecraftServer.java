@@ -3,6 +3,7 @@ package dev.sweetberry.spawnlib.internal.mixin;
 import com.mojang.datafixers.DataFixer;
 import dev.sweetberry.spawnlib.api.SpawnModification;
 import dev.sweetberry.spawnlib.api.modifications.DimensionSpawnModification;
+import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.duck.Duck_MinecraftServer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -56,9 +57,7 @@ public class Mixin_MinecraftServer implements Duck_MinecraftServer {
                     NbtAccounter.unlimitedHeap()
             );
             spawnlib$globalSpawn = SpawnModification.readFromTag(tag.getCompound(""));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        } catch (IOException ignored) {}
     }
 
     @Inject(

@@ -95,7 +95,7 @@ public abstract class Mixin_PlayerList {
 
         // Send updates
         connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(spawn.getLevel()), (byte) (stillAlive ? 1 : 0)));
-        connection.teleport(spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);
+        player.teleportTo(level, spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);
         connection.send(new ClientboundSetDefaultSpawnPositionPacket(BlockPos.containing(spawnPos.x, spawnPos.y, spawnPos.z), 0));
         connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
         connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
