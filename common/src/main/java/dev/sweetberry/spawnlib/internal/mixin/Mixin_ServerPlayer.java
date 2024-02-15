@@ -1,19 +1,23 @@
 package dev.sweetberry.spawnlib.internal.mixin;
 
+import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.SpawnModification;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.duck.Duck_ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public class Mixin_ServerPlayer implements Duck_ServerPlayer {
+public abstract class Mixin_ServerPlayer implements Duck_ServerPlayer {
     @Unique
     @Nullable
     private SpawnModification spawnlib$globalSpawn;
@@ -21,6 +25,9 @@ public class Mixin_ServerPlayer implements Duck_ServerPlayer {
     @Unique
     @Nullable
     private SpawnModification spawnlib$localSpawn;
+
+    @Shadow
+    public abstract void teleportTo(ServerLevel $$0, double $$1, double $$2, double $$3, float $$4, float $$5);
 
     @Override
     public SpawnModification spawnlib$getGlobalSpawn() {
@@ -57,5 +64,15 @@ public class Mixin_ServerPlayer implements Duck_ServerPlayer {
             spawnlib$globalSpawn = SpawnModification.readFromTag(spawnTag.getCompound("global"));
         if (spawnTag.contains("local"))
             spawnlib$localSpawn = SpawnModification.readFromTag(spawnTag.getCompound("local"));
+    }
+
+    @Inject(
+            method = "restoreFrom",
+            at = @At("TAIL")
+    )
+    private void spawnLib$copySpawns(ServerPlayer player, boolean stillAlive, CallbackInfo ci) {
+        var duckedPlayer = (Duck_ServerPlayer) player;
+        spawnlib$globalSpawn = duckedPlayer.spawnlib$getGlobalSpawn();
+        spawnlib$localSpawn = duckedPlayer.spawnlib$getLocalSpawn();
     }
 }

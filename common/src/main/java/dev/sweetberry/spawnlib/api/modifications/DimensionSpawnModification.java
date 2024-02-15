@@ -25,8 +25,9 @@ public class DimensionSpawnModification implements SpawnModification {
 
     @Override
     public boolean modify(SpawnContext context) {
-        // TODO!
-        context.setSpawnPos(findLowestValidSpawn(context, context.getLevel(dimension), Vec3.ZERO));
+        var level = context.getLevel(dimension);
+
+        context.setSpawnPos(findLowestValidSpawn(context, level, Vec3.ZERO));
         return true;
     }
 

@@ -1,6 +1,8 @@
 package dev.sweetberry.spawnlib.api;
 
 import dev.sweetberry.spawnlib.api.modifications.DimensionSpawnModification;
+import dev.sweetberry.spawnlib.internal.SpawnLib;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
@@ -70,8 +72,12 @@ public interface SpawnModification {
 
     default Vec3 findLowestValidSpawn(SpawnContext context, ServerLevel level, Vec3 pos) {
         while (true) {
+            // TODO: Come up with something better here.
+            if (pos.y < level.getMinBuildHeight())
+                return pos;
+            SpawnLib.LOGGER.info(pos.toString());
             var currValid = isValidForSpawning(context, level, pos);
-            var downValid = !isValidForSpawning(context, level, pos.subtract(0, 1, 0));
+            var downValid = isValidForSpawning(context, level, pos.subtract(0, 1, 0));
             if (currValid && !downValid)
                 // This is the lowest valid spot.
                 return pos;

@@ -5,7 +5,7 @@ plugins {
     alias libs.plugins.loom
 }
 base {
-    archivesName = "${mod_name}-fabric-${libs.versions.minecraft}"
+    archivesName = "${mod_name}-fabric-${libs.versions.minecraft.get()}"
 }
 dependencies {
     minecraft libs.minecraft

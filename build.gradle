@@ -54,20 +54,26 @@ subprojects {
     }
 
     processResources {
+        String minecraftVersion = libs.versions.minecraft.get()
+        String minecraftRange = libs.versions.range.minecraft.get()
+        String fabricVersion = libs.versions.fabric.api.get()
+        String fabricLoaderVersion = libs.versions.fabric.loader.get()
+        String neoforgeVersion = libs.versions.neoforge.get()
+        String neoforgeRange = libs.versions.range.neoforge.get()
         def expandProps = [
-                "version": version,
-                "group": project.group, //Else we target the task's group.
-                "minecraft_version": libs.versions.minecraft,
-                "minecraft_version_range": libs.versions.range.minecraft,
-                "fabric_version": libs.versions.fabric.api,
-                "fabric_loader_version": libs.versions.fabric.loader,
+                "version": version as String,
+                "group": project.group as String, // Else we target the task's group.
+                "minecraft_version": minecraftVersion,
+                "minecraft_version_range": minecraftRange,
+                "fabric_version": fabricVersion,
+                "fabric_loader_version": fabricLoaderVersion,
                 "mod_name": mod_name,
                 "mod_author": mod_author,
                 "mod_id": mod_id,
                 "license": license,
                 "description": project.description,
-                "neoforge_version": libs.versions.neoforge,
-                "neoforge_loader_version_range": libs.versions.range.neoforge,
+                "neoforge_version": neoforgeVersion,
+                "neoforge_loader_version_range": neoforgeRange,
                 "credits": credits
         ]
 
@@ -82,5 +88,9 @@ subprojects {
     // other mod developers.
     tasks.withType(GenerateModuleMetadata).configureEach {
         enabled = false
+    }
+
+    javadoc {
+        options.tags = ["reason"]
     }
 }

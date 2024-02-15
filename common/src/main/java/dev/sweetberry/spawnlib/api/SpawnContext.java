@@ -13,7 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds data about the spawn point of the player
+ * <br>
  * Used for figuring out where they should spawn
+ * <br>
+ * TODO: Add fields for respawn sounds and actions for successful respawns
  * */
 public class SpawnContext {
     private final ServerPlayer player;
@@ -70,6 +73,13 @@ public class SpawnContext {
      * */
     public void setSpawnPos(Vec3 pos) {
         spawnPos = pos;
+    }
+
+    /**
+     * Gets the player's spawn pos for this context
+     * */
+    public Vec3 getSpawnPos() {
+        return spawnPos;
     }
 
     /**

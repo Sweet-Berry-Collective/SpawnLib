@@ -55,7 +55,7 @@ public class Mixin_MinecraftServer implements Duck_MinecraftServer {
                     ),
                     NbtAccounter.unlimitedHeap()
             );
-            spawnlib$globalSpawn = SpawnModification.readFromTag(tag);
+            spawnlib$globalSpawn = SpawnModification.readFromTag(tag.getCompound(""));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -70,7 +70,8 @@ public class Mixin_MinecraftServer implements Duck_MinecraftServer {
         var file = dir.path().resolve("spawnlib.dat").toFile();
         try {
             file.createNewFile();
-            var tag = SpawnModification.writeToTag(spawnlib$globalSpawn);
+            var tag = new CompoundTag();
+            tag.put("", SpawnModification.writeToTag(spawnlib$globalSpawn));
             tag.write(
                     new DataOutputStream(
                             new FileOutputStream(file)
