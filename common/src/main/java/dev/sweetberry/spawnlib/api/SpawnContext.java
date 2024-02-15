@@ -19,6 +19,7 @@ public class SpawnContext {
     private final ServerPlayer player;
     private Vec3 spawnPos = Vec3.ZERO;
     private ServerLevel level;
+    private boolean obstructed = false;
 
     public SpawnContext(ServerPlayer player) {
         this.player = player;
@@ -27,17 +28,18 @@ public class SpawnContext {
 
     /**
      * Gets the player's spawn
-     * <br>
-     * TODO: Keep track of which were present and which failed, so we can provide chat feedback
      * */
     @NotNull
     public static SpawnContext getSpawn(ServerPlayer player) {
-        var helper = SpawnLib.getHelper();
         var context = new SpawnContext(player);
 
         var spawn = SpawnExtensions.getLocalSpawn(player);
-        if (spawn != null && spawn.modify(context))
-            return context;
+        if (spawn != null) {
+            if (spawn.modify(context))
+                return context;
+            context.obstructed = true;
+            // TODO: set player local spawn to null
+        }
 
         context.reset();
         spawn = SpawnExtensions.getGlobalSpawn(player);
@@ -53,6 +55,14 @@ public class SpawnContext {
     private void reset() {
         spawnPos = Vec3.ZERO;
         level = player.getServer().overworld();
+    }
+
+    /**
+     * Whether the player local spawn was obstructed
+     * @return true when the player had a local spawn set and failed to spawn there
+     * */
+    public boolean wasObstructed() {
+        return obstructed;
     }
 
     /**
@@ -97,6 +107,9 @@ public class SpawnContext {
         return level;
     }
 
+    /**
+     * Gets a level with a specific key
+     * */
     public ServerLevel getLevel(ResourceKey<Level> dimension) {
         return getServer().getLevel(dimension);
     }

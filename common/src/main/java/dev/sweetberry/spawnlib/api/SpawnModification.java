@@ -27,6 +27,10 @@ public interface SpawnModification {
         return new DimensionSpawnModification();
     }
 
+    /**
+     * Modifies the spawn
+     * @return true when the modification was successful, false if it failed
+     * */
     boolean modify(SpawnContext context);
 
     void toTag(CompoundTag nbt);
@@ -34,6 +38,13 @@ public interface SpawnModification {
     void fromTag(CompoundTag nbt);
 
     ResourceLocation getId();
+
+    /**
+     * Whether to clear the modification if it fails
+     * */
+    default boolean clearOnFail() {
+        return false;
+    }
 
     default boolean isValidForSpawning(SpawnContext context, ServerLevel level, Vec3 pos) {
         var box = context.getPlayerBoundingBox(pos);
