@@ -2,8 +2,11 @@ package dev.sweetberry.spawnlib.api;
 
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.mixin.Accessor_Entity;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -32,17 +35,17 @@ public class SpawnContext {
         var helper = SpawnLib.getHelper();
         var context = new SpawnContext(player);
 
-        var spawn = helper.getLocalSpawn(player);
+        var spawn = SpawnExtensions.getLocalSpawn(player);
         if (spawn != null && spawn.modify(context))
             return context;
 
         context.reset();
-        spawn = helper.getGlobalSpawn(player);
+        spawn = SpawnExtensions.getGlobalSpawn(player);
         if (spawn != null && spawn.modify(context))
             return context;
 
         context.reset();
-        spawn = helper.getGlobalSpawn(player.getServer());
+        spawn = SpawnExtensions.getGlobalSpawn(player.getServer());
         spawn.modify(context);
         return context;
     }
@@ -67,6 +70,13 @@ public class SpawnContext {
     }
 
     /**
+     * Gets the server
+     * */
+    public MinecraftServer getServer() {
+        return player.getServer();
+    }
+
+    /**
      * Gets the player's current bounding box
      * */
     public AABB getPlayerBoundingBox() {
@@ -85,6 +95,10 @@ public class SpawnContext {
      * */
     public ServerLevel getLevel() {
         return level;
+    }
+
+    public ServerLevel getLevel(ResourceKey<Level> dimension) {
+        return getServer().getLevel(dimension);
     }
 
     /**

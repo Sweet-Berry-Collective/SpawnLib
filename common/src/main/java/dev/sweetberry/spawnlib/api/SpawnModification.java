@@ -1,19 +1,37 @@
 package dev.sweetberry.spawnlib.api;
 
+import dev.sweetberry.spawnlib.api.modifications.DimensionSpawnModification;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
 
 public interface SpawnModification {
+    static CompoundTag writeToTag(SpawnModification spawn) {
+        var tag = new CompoundTag();
+        tag.putString("id", spawn.getId().toString());
+        var data = new CompoundTag();
+        spawn.toTag(data);
+        tag.put("data", data);
+        return tag;
+    }
+
+    static SpawnModification readFromTag(CompoundTag tag) {
+        // TODO
+        return new DimensionSpawnModification();
+    }
+
     boolean modify(SpawnContext context);
 
-    void toTag(Tag nbt);
+    void toTag(CompoundTag nbt);
 
-    void fromTag(Tag nbt);
+    void fromTag(CompoundTag nbt);
 
     ResourceLocation getId();
 
