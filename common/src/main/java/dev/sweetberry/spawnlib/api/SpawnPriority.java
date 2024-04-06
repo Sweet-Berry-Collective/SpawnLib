@@ -14,7 +14,7 @@ public enum SpawnPriority {
 
     /**
      * Represents the "world spawn" for a specific player
-     * An example of this would be Origins' nether spawn
+     * An example of this would be Origins' Nether Spawn power
      */
     GLOBAL_PLAYER,
 

@@ -1,6 +1,5 @@
 package dev.sweetberry.spawnlib.api;
 
-import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.mixin.Accessor_Entity;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -36,7 +35,7 @@ public class SpawnContext {
     public static SpawnContext getSpawn(ServerPlayer player) {
         var context = new SpawnContext(player);
 
-        var spawn = SpawnExtensions.getLocalSpawn(player);
+        ModifiedSpawn spawn = SpawnExtensions.getLocalSpawn(player);
         if (spawn != null) {
             if (spawn.modify(context))
                 return context;

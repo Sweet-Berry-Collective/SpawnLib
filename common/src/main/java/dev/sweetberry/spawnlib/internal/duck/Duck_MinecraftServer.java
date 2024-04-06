@@ -1,7 +1,8 @@
 package dev.sweetberry.spawnlib.internal.duck;
 
-import dev.sweetberry.spawnlib.api.SpawnModification;
+import dev.sweetberry.spawnlib.api.ModifiedSpawn;
+import net.minecraft.core.Holder;
 
 public interface Duck_MinecraftServer {
-    SpawnModification spawnlib$getGlobalSpawn();
+    Holder<ModifiedSpawn> spawnlib$getGlobalSpawn();
 }

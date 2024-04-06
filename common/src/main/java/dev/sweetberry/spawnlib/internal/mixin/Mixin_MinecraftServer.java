@@ -1,12 +1,16 @@
 package dev.sweetberry.spawnlib.internal.mixin;
 
 import com.mojang.datafixers.DataFixer;
-import dev.sweetberry.spawnlib.api.SpawnModification;
-import dev.sweetberry.spawnlib.api.modifications.DimensionSpawnModification;
+import dev.sweetberry.spawnlib.api.ModifiedSpawn;
+import dev.sweetberry.spawnlib.api.SpawnLibRegistryKeys;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.duck.Duck_MinecraftServer;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.Services;
 import net.minecraft.server.WorldStem;
@@ -14,7 +18,6 @@ import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,15 +31,18 @@ import java.io.*;
 import java.net.Proxy;
 
 @Mixin(MinecraftServer.class)
-public class Mixin_MinecraftServer implements Duck_MinecraftServer {
+public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
     @Shadow @Final protected LevelStorageSource.LevelStorageAccess storageSource;
+
+    @Shadow public abstract RegistryAccess.Frozen registryAccess();
+
     @Unique
     @NotNull
-    private SpawnModification spawnlib$globalSpawn = new DimensionSpawnModification();
+    private Holder<ModifiedSpawn> spawnlib$globalSpawn = Holder.Reference.createStandAlone(this.registryAccess().lookupOrThrow(SpawnLibRegistryKeys.SPAWN), ResourceKey.create(SpawnLibRegistryKeys.SPAWN, SpawnLib.id("default")));
 
 
     @Override
-    public SpawnModification spawnlib$getGlobalSpawn() {
+    public Holder<ModifiedSpawn> spawnlib$getGlobalSpawn() {
         return spawnlib$globalSpawn;
     }
 
@@ -56,8 +62,8 @@ public class Mixin_MinecraftServer implements Duck_MinecraftServer {
                     ),
                     NbtAccounter.unlimitedHeap()
             );
-            spawnlib$globalSpawn = SpawnModification.readFromTag(tag.getCompound(""));
-        } catch (IOException ignored) {}
+            spawnlib$globalSpawn = ModifiedSpawn.CODEC.decode(NbtOps.INSTANCE, tag.getCompound("")).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Could not resolve global spawn from spawnlib.dat")).getFirst();
+        } catch (Exception ignored) {}
     }
 
     @Inject(
@@ -70,7 +76,7 @@ public class Mixin_MinecraftServer implements Duck_MinecraftServer {
         try {
             file.createNewFile();
             var tag = new CompoundTag();
-            tag.put("", SpawnModification.writeToTag(spawnlib$globalSpawn));
+            tag.put("", ModifiedSpawn.CODEC.encodeStart(NbtOps.INSTANCE, spawnlib$globalSpawn).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Failed to encode global spawn to spawnlib.dat")));
             tag.write(
                     new DataOutputStream(
                             new FileOutputStream(file)

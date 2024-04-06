@@ -1,35 +1,21 @@
-package dev.sweetberry.spawnlib.api;
+package dev.sweetberry.spawnlib.api.modification;
 
-import dev.sweetberry.spawnlib.api.modifications.DimensionSpawnModification;
+import com.mojang.serialization.Codec;
+import dev.sweetberry.spawnlib.api.SpawnContext;
+import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface SpawnModification {
-    static CompoundTag writeToTag(SpawnModification spawn) {
-        var tag = new CompoundTag();
-        tag.putString("id", spawn.getId().toString());
-        var data = new CompoundTag();
-        spawn.toTag(data);
-        tag.put("data", data);
-        return tag;
-    }
-
-    static SpawnModification readFromTag(CompoundTag tag) {
-        // TODO
-        var spawn = new DimensionSpawnModification();
-        spawn.fromTag(tag);
-        return spawn;
-    }
+    Codec<SpawnModification> CODEC = SpawnLib.getHelper().getSpawnModificationCodecRegistry().byNameCodec().dispatch(SpawnModification::getCodec, codec -> codec);
 
     /**
      * Modifies the spawn
@@ -37,11 +23,15 @@ public interface SpawnModification {
      * */
     boolean modify(SpawnContext context);
 
-    void toTag(CompoundTag nbt);
-
-    void fromTag(CompoundTag nbt);
-
     ResourceLocation getId();
+
+    Codec<? extends SpawnModification> getCodec();
+
+    /**
+     * A list of fields within this SpawnModification.
+     * Used internally for resolving metadata.
+     */
+    List<Field<?>> getFields();
 
     /**
      * Whether to clear the modification if it fails
