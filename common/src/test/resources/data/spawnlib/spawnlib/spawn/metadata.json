@@ -3,6 +3,14 @@
     "test": {
       "type": "spawnlib:dimension",
       "default": "minecraft:the_nether"
+    },
+    "unused": {
+      "type": "spawnlib:dimension",
+      "default": "minecraft:the_nether"
+    },
+    "unused_two": {
+      "type": "spawnlib:dimension",
+      "default": "minecraft:the_nether"
     }
   },
   "functions": [
