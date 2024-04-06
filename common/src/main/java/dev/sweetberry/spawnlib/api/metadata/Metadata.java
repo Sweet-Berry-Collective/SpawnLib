@@ -57,7 +57,7 @@ public class Metadata<T> implements Supplier<T> {
         if (value == null) {
             return defaultValue;
         }
-        return defaultValue;
+        return value;
     }
 
 }

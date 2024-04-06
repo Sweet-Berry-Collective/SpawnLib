@@ -9,7 +9,6 @@ import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.Metadata;
 import dev.sweetberry.spawnlib.api.modification.SpawnModification;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,7 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
     @Override
     public <T> DataResult<Pair<ModifiedSpawn, T>> decode(DynamicOps<T> ops, T input) {
         Map<String, Metadata<Object>> metadata = new HashMap<>();
-        List<Metadata<Object>> unused = new ArrayList<>();
+        Map<String, Metadata<Object>> unused = new HashMap<>();
 
         DataResult<T> metadataInput = ops.get(input, "metadata");
 
@@ -32,7 +31,7 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
                 }
                 Metadata<?> individualMetadata = metadataResult.result().get().getFirst();
                 individualMetadata.setKey(ops.getStringValue(values.get(i).getFirst()).getOrThrow(false, s -> {}));
-                unused.add((Metadata<Object>)individualMetadata);
+                unused.put(individualMetadata.getKey(), (Metadata<Object>)individualMetadata);
             }
         }
 
@@ -45,15 +44,15 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
         List<SpawnModification> modifications = modificationResult.result().get().getFirst();
         modifications.forEach(modification -> modification.getFields().forEach(field -> {
             if (field.getKey() == null) return;
-            Metadata<Object> md = metadata.getOrDefault(field.getKey(), null);
+            Metadata<Object> md = unused.getOrDefault(field.getKey(), null);
             if (md != null && md.getType().isOfType(field)) {
                 metadata.put(md.getKey(), md);
-                unused.remove(md);
+                unused.remove(md.getKey());
                 ((Field<Object>)field).setMetadata(md);
             }
         }));
 
-        return DataResult.success(Pair.of(new ModifiedSpawn(metadata, modifications, unused), input));
+        return DataResult.success(Pair.of(new ModifiedSpawn(metadata, modifications, unused.isEmpty() ? null : unused.keySet().stream().toList()), input));
     }
 
     @Override

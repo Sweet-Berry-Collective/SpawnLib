@@ -26,10 +26,10 @@ public class ModifiedSpawn {
     public static final Codec<Holder<ModifiedSpawn>> CODEC = RegistryFileCodec.create(SpawnLibRegistryKeys.SPAWN, DIRECT_CODEC);
 
     @Nullable
-    List<Metadata<Object>> unusedMetadata;
+    List<String> unusedMetadata;
 
     @ApiStatus.Internal
-    public ModifiedSpawn(Map<String, Metadata<Object>> metadata, List<SpawnModification> modifications, List<Metadata<Object>> unusedMetadata) {
+    public ModifiedSpawn(Map<String, Metadata<Object>> metadata, List<SpawnModification> modifications, List<String> unusedMetadata) {
         this.metadata = metadata;
         this.modifications = modifications;
         this.unusedMetadata = unusedMetadata;
@@ -82,7 +82,16 @@ public class ModifiedSpawn {
 
     @ApiStatus.Internal
     public void logAndClearUnusedMetadata() {
-
+        if (unusedMetadata == null) return;
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < unusedMetadata.size(); ++i) {
+            stringBuilder.append(unusedMetadata.get(i));
+            if (i < unusedMetadata.size() - 1) {
+                stringBuilder.append(", ");
+            }
+        }
+        SpawnLib.LOGGER.warn("Unused metadata: [ {} ] in modified spawn data with id '{}'", stringBuilder, id);
+        this.unusedMetadata = null;
     }
 
 }

@@ -12,7 +12,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
-import net.minecraft.core.Holder;
+import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -33,12 +33,19 @@ public class SpawnLibFabric implements ModInitializer {
         SpawnLib.init(new FabricPlatformHelper());
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             SpawnLibFabric.server = server;
-            // TODO: Testing code, remove later.
 
+            // TODO: Testing code, remove later.
             HolderLookup.RegistryLookup<ModifiedSpawn> lookup = server.registryAccess().lookupOrThrow(SpawnLibRegistryKeys.SPAWN);
-            ResourceKey<ModifiedSpawn> key = ResourceKey.create(SpawnLibRegistryKeys.SPAWN, SpawnLib.id("default"));
+            ResourceKey<ModifiedSpawn> key = ResourceKey.create(SpawnLibRegistryKeys.SPAWN, SpawnLib.id("metadata"));
             if (lookup.get(key).isPresent())
                 ((Duck_MinecraftServer)server).spawnlib$setGlobalSpawn(lookup.getOrThrow(key));
+        });
+
+        DynamicRegistrySetupCallback.EVENT.register(registryView -> {
+            registryView.registerEntryAdded(SpawnLibRegistryKeys.SPAWN, (rawId, id, object) -> {
+                object.setId(id);
+                object.logAndClearUnusedMetadata();
+            });
         });
 
         DynamicRegistries.register(SpawnLibRegistryKeys.SPAWN, ModifiedSpawn.DIRECT_CODEC);
