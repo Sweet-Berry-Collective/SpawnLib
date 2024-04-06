@@ -5,7 +5,7 @@ plugins {
     alias libs.plugins.neogradle
 }
 base {
-    archivesName = "${mod_name}-neoforge-${libs.versions.minecraft}"
+    archivesName = "${mod_name}-neoforge-${libs.versions.minecraft.get()}"
 }
 
 // Automatically enable neoforge AccessTransformers if the file exists
