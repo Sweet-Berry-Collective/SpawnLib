@@ -5,7 +5,7 @@ plugins {
     alias libs.plugins.vanillagradle
 }
 base {
-    archivesName = "${mod_name}-common-${libs.versions.minecraft}"
+    archivesName = "${mod_name}-common-${libs.versions.minecraft.get()}"
 }
 minecraft {
     version libs.versions.minecraft.get()
