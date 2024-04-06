@@ -2,7 +2,7 @@
   "functions": [
     {
       "type": "spawnlib:in_dimension",
-      "dimension": "minecraft:the_nether"
+      "dimension": "minecraft:the_end"
     }
   ]
 }
