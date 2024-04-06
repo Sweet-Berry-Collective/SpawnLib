@@ -18,6 +18,7 @@ import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,16 +35,19 @@ import java.net.Proxy;
 public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
     @Shadow @Final protected LevelStorageSource.LevelStorageAccess storageSource;
 
-    @Shadow public abstract RegistryAccess.Frozen registryAccess();
-
     @Unique
-    @NotNull
-    private Holder<ModifiedSpawn> spawnlib$globalSpawn = Holder.Reference.createStandAlone(this.registryAccess().lookupOrThrow(SpawnLibRegistryKeys.SPAWN), ResourceKey.create(SpawnLibRegistryKeys.SPAWN, SpawnLib.id("default")));
+    @Nullable
+    private Holder<ModifiedSpawn> spawnlib$globalSpawn;
 
 
     @Override
     public Holder<ModifiedSpawn> spawnlib$getGlobalSpawn() {
         return spawnlib$globalSpawn;
+    }
+
+    @Override
+    public void spawnlib$setGlobalSpawn(Holder<ModifiedSpawn> value) {
+        spawnlib$globalSpawn = value;
     }
 
     @Inject(
@@ -71,6 +75,8 @@ public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
             at = @At("TAIL")
     )
     private void spawnlib$addSpawnModifications(boolean $$0, boolean $$1, boolean $$2, CallbackInfoReturnable<Boolean> cir) {
+        if (spawnlib$globalSpawn == null)
+            return;
         var dir = ((Accessor_LevelStorageAccess)storageSource).getLevelDirectory();
         var file = dir.path().resolve("spawnlib.dat").toFile();
         try {

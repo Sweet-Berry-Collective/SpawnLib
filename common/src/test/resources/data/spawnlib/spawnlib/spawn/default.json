@@ -1,0 +1,8 @@
+{
+  "functions": [
+    {
+      "type": "spawnlib:in_dimension",
+      "dimension": "minecraft:the_nether"
+    }
+  ]
+}

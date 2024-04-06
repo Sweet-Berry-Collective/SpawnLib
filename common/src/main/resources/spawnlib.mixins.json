@@ -8,8 +8,7 @@
     "Accessor_Entity",
     "Accessor_LevelStorageAccess",
     "Mixin_MinecraftServer",
-    "Mixin_PlayerList",
-    "Mixin_ServerPlayer"
+    "Mixin_PlayerList"
   ],
   "client": [],
   "injectors": {

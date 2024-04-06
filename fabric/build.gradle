@@ -21,16 +21,25 @@ loom {
     mixin {
         defaultRefmapName.set("${mod_id}.refmap.json")
     }
+
+    mods {
+        register(mod_id) {
+            sourceSet(sourceSets.main)
+            sourceSet(sourceSets.test)
+        }
+    }
     runs {
         client {
             client()
             setConfigName("Fabric Client")
+            setSource(sourceSets.test)
             ideConfigGenerated(true)
             runDir("run")
         }
         server {
             server()
             setConfigName("Fabric Server")
+            setSource(sourceSets.test)
             ideConfigGenerated(true)
             runDir("run")
         }
@@ -49,6 +58,10 @@ tasks.named("sourcesJar", Jar) {
 
 processResources {
     from project(":common").sourceSets.main.resources
+}
+
+processTestResources {
+    from project(":common").sourceSets.test.resources
 }
 
 publishing {

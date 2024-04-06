@@ -1,6 +1,8 @@
 package dev.sweetberry.spawnlib.api.metadata;
 
 import com.mojang.serialization.Codec;
+import dev.sweetberry.spawnlib.internal.SpawnLib;
+import dev.sweetberry.spawnlib.internal.registry.RegistrationCallback;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
@@ -13,5 +15,10 @@ public class SpawnLibMetadataTypes {
 
     private static <T> Class<T> castClass(Class<?> clazz) {
         return (Class<T>) clazz;
+    }
+
+    public static void registerAll(RegistrationCallback<MetadataType<?>> callback) {
+        callback.register(SpawnLib.getHelper().getMetadataTypeRegistry(), SpawnLib.id("dimension"), DIMENSION
+        );
     }
 }

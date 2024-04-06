@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds data about the spawn point of the player
@@ -31,7 +31,7 @@ public class SpawnContext {
     /**
      * Gets the player's spawn
      * */
-    @NotNull
+    @Nullable
     public static SpawnContext getSpawn(ServerPlayer player) {
         var context = new SpawnContext(player);
 
@@ -50,8 +50,10 @@ public class SpawnContext {
 
         context.reset();
         spawn = SpawnExtensions.getGlobalSpawn(player.getServer());
-        spawn.modify(context);
-        return context;
+        if (spawn != null && spawn.modify(context)) {
+            return context;
+        }
+        return null;
     }
 
     private void reset() {

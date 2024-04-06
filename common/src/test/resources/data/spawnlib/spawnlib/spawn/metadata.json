@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "test": {
+      "type": "spawnlib:dimension",
+      "default": "minecraft:the_nether"
+    }
+  },
+  "functions": [
+    {
+      "type": "spawnlib:in_dimension",
+      "dimension": "${test}"
+    }
+  ]
+}

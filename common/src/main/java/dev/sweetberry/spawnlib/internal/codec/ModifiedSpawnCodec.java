@@ -25,7 +25,7 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
         if (metadataInput.error().isEmpty()) {
             List<Pair<T, T>> values = ops.getMapValues(metadataInput.getOrThrow(false, (s) -> {})).getOrThrow(false, (s) -> {}).toList();
             for (int i = 0; i < values.size(); ++i) {
-                DataResult<Pair<Metadata<?>, T>> metadataResult = Metadata.CODEC.decode(ops, metadataInput.getOrThrow(false, (s) -> {}));
+                DataResult<Pair<Metadata<?>, T>> metadataResult = Metadata.CODEC.decode(ops, values.get(i).getSecond());
                 if (metadataResult.result().isEmpty()) {
                     int finalI = i;
                     return DataResult.error(() -> "Could not decode metadata at index [" + finalI + "]. " + metadataResult.error());
@@ -39,7 +39,7 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
         DataResult<Pair<List<SpawnModification>, T>> modificationResult = SpawnModification.CODEC.listOf().decode(ops, ops.get(input, "functions").get().map(l -> l, r -> {
             throw new IllegalArgumentException("Could not decode spawn modification. " + r.message());
         }));
-        if (modificationResult.result().isEmpty()) {
+        if (modificationResult.result().isEmpty() || modificationResult.result().get().getFirst().isEmpty()) {
             return DataResult.error(() -> "Could not decode spawn, no modifications were specified.");
         }
         List<SpawnModification> modifications = modificationResult.result().get().getFirst();

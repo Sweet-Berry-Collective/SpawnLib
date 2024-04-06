@@ -22,8 +22,8 @@ public class SpawnLibFieldCodec<T> implements Codec<Field<T>> {
     @Override
     public <T1> DataResult<Pair<Field<T>, T1>> decode(DynamicOps<T1> ops, T1 input) {
         var potentialMetadata = ops.getStringValue(input);
-        if (potentialMetadata.error().isPresent() && potentialMetadata.get().mapLeft(s -> s.startsWith("${") && s.endsWith("}")).left().orElse(false)) {
-            metadataType.codec().decode(ops, input).map(pair -> new Field<>(pair.getFirst()));
+        if (potentialMetadata.error().isPresent() || potentialMetadata.get().mapLeft(s -> !s.startsWith("${") || !s.endsWith("}")).left().orElse(true)) {
+            return metadataType.codec().decode(ops, input).map(pair -> new Field<>(pair.getFirst())).map(tField -> Pair.of(tField, input));
         }
         // There shouldn't be an error as we we have already checked for errors above.
         String metadataName = potentialMetadata.getOrThrow(false, s -> {}).substring(2);

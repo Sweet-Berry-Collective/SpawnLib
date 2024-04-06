@@ -16,7 +16,7 @@ if (file('src/main/resources/META-INF/accesstransformer.cfg').exists()) {
 }
 runs {
     configureEach {
-        modSource project.sourceSets.main
+        modSource project.sourceSets.test
     }
     client {
         systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
@@ -59,6 +59,10 @@ tasks.named("sourcesJar", Jar) {
 
 tasks.withType(ProcessResources).matching(notNeoTask).configureEach {
     from project(":common").sourceSets.main.resources
+}
+
+processTestResources {
+    from project(":common").sourceSets.test.resources
 }
 
 publishing {

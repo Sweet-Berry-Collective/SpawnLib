@@ -29,7 +29,7 @@ public class FabricPlatformHelper implements PlatformHelper {
 
     @Override
     public ModifiedSpawnsAttachment getAttachment(ServerPlayer player) {
-        return player.getAttached(SpawnLibFabric.MODIFIED_SPAWNS_ATTACHMENT);
+        return player.getAttachedOrCreate(SpawnLibFabric.MODIFIED_SPAWNS_ATTACHMENT);
     }
 
     @Override

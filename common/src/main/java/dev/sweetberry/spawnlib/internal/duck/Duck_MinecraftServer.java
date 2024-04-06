@@ -5,4 +5,5 @@ import net.minecraft.core.Holder;
 
 public interface Duck_MinecraftServer {
     Holder<ModifiedSpawn> spawnlib$getGlobalSpawn();
+    void spawnlib$setGlobalSpawn(Holder<ModifiedSpawn> spawn);
 }
