@@ -6,6 +6,7 @@ import dev.sweetberry.spawnlib.api.modification.InBoundsSpawnModification;
 import dev.sweetberry.spawnlib.api.modification.SpawnModification;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.registry.RegistrationCallback;
+import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -21,8 +22,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 
 public class SpawnLibMetadataTypes {
-    public static final Registry<MetadataType<?>> METADATA_TYPE = SpawnLib.getHelper().getMetadataTypeRegistry();
-
     public static final MetadataType<Integer> INT = new MetadataType<>(Integer.class, Codec.INT);
     public static final MetadataType<Double> DOUBLE = new MetadataType<>(Double.class, Codec.DOUBLE);
     public static final MetadataType<Float> FLOAT = new MetadataType<>(Float.class, Codec.FLOAT);
@@ -47,13 +46,13 @@ public class SpawnLibMetadataTypes {
     }
 
     public static void registerAll(RegistrationCallback<MetadataType<?>> callback) {
-        callback.register(METADATA_TYPE, SpawnLib.id("int"), INT);
-        callback.register(METADATA_TYPE, SpawnLib.id("float"), FLOAT);
-        callback.register(METADATA_TYPE, SpawnLib.id("double"), DOUBLE);
-        callback.register(METADATA_TYPE, SpawnLib.id("boolean"), BOOLEAN);
-        callback.register(METADATA_TYPE, SpawnLib.id("optional_vec3"), VEC3);
-        callback.register(METADATA_TYPE, SpawnLib.id("dimension"), DIMENSION);
-        callback.register(METADATA_TYPE, SpawnLib.id("fluids"), FLUIDS);
-        callback.register(METADATA_TYPE, SpawnLib.id("heightmap_type"), HEIGHTMAP_TYPE);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("int"), INT);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("float"), FLOAT);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("double"), DOUBLE);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("boolean"), BOOLEAN);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("optional_vec3"), VEC3);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("dimension"), DIMENSION);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("fluids"), FLUIDS);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("heightmap_type"), HEIGHTMAP_TYPE);
     }
 }

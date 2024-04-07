@@ -19,9 +19,7 @@ import java.util.Map;
 public class SerializableDataCodec implements Codec<Map<ResourceKey<ModifiedSpawn>, Object>> {
     public static final SerializableDataCodec INSTANCE = new SerializableDataCodec();
 
-    private SerializableDataCodec() {
-
-    }
+    private SerializableDataCodec() {}
 
     @Override
     public <T> DataResult<Pair<Map<ResourceKey<ModifiedSpawn>, Object>, T>> decode(DynamicOps<T> ops, T input) {
@@ -32,9 +30,8 @@ public class SerializableDataCodec implements Codec<Map<ResourceKey<ModifiedSpaw
             try {
                 Holder<ModifiedSpawn> holder = ModifiedSpawn.CODEC.decode(registryOps, mapLike.getFirst()).getOrThrow(false, s -> {
                 }).getFirst();
-                if (!holder.isBound() || holder.unwrapKey().isEmpty() || !(holder.value() instanceof SerializableSpawnModification<?> serializable)) {
+                if (!holder.isBound() || holder.unwrapKey().isEmpty() || !(holder.value() instanceof SerializableSpawnModification<?> serializable))
                     continue;
-                }
                 map.put(holder.unwrapKey().get(), serializable.getSerializableCodec().decode(registryOps, mapLike.getSecond()).getOrThrow(false, s -> {
                 }).getFirst());
             } catch (Exception ignored) {

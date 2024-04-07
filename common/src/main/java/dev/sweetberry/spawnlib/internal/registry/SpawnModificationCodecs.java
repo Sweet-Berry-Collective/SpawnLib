@@ -17,19 +17,17 @@ import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.core.Registry;
 
 public class SpawnModificationCodecs {
-    public static final Registry<Codec<? extends SpawnModification>> SPAWN_MODIFICATION_CODECS = SpawnLib.getHelper().getSpawnModificationCodecRegistry();
-
     public static void registerAll(RegistrationCallback<Codec<? extends SpawnModification>> callback) {
-        callback.register(SPAWN_MODIFICATION_CODECS, DimensionSpawnModification.ID, DimensionSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, FindGroundSpawnModification.ID, FindGroundSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, HeightmapTypeSpawnModification.ID, HeightmapTypeSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, InBoundsSpawnModification.ID, InBoundsSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, OffsetPositionSpawnModification.ID, OffsetPositionSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, RandomOffsetSpawnModification.ID, RandomOffsetSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, RestrictToBlockSpawnModification.ID, RestrictToBlockSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, RestrictToFluidSpawnModification.ID, RestrictToFluidSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, SeaLevelSpawnModification.ID, SeaLevelSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, SetPositionSpawnModification.ID, SetPositionSpawnModification.CODEC);
-        callback.register(SPAWN_MODIFICATION_CODECS, TryUntilSafeSpawnModification.ID, TryUntilSafeSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, DimensionSpawnModification.ID, DimensionSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, FindGroundSpawnModification.ID, FindGroundSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, HeightmapTypeSpawnModification.ID, HeightmapTypeSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, InBoundsSpawnModification.ID, InBoundsSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, OffsetPositionSpawnModification.ID, OffsetPositionSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, RandomOffsetSpawnModification.ID, RandomOffsetSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, RestrictToBlockSpawnModification.ID, RestrictToBlockSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, RestrictToFluidSpawnModification.ID, RestrictToFluidSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, SeaLevelSpawnModification.ID, SeaLevelSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, SetPositionSpawnModification.ID, SetPositionSpawnModification.CODEC);
+        callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, TryUntilSafeSpawnModification.ID, TryUntilSafeSpawnModification.CODEC);
     }
 }

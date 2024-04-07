@@ -47,17 +47,11 @@ public class TryUntilSafeSpawnModification implements SpawnModification {
         ServerPlayer player = context.getPlayer();
         SpawnContext copiedContext = new SpawnContext(player);
 
-        for (int i = 0; i < getMaxIterations(); ++i) {
+        outer: for (int i = 0; i < getMaxIterations(); ++i) {
             copiedContext.copy(context);
-            boolean failedFunctions = false;
-            for (SpawnModification modification : functions) {
-                if (!modification.modify(copiedContext)) {
-                    failedFunctions = true;
-                    break;
-                }
-            }
-            if (failedFunctions)
-                continue;
+            for (SpawnModification modification : functions)
+                if (!modification.modify(copiedContext))
+                    continue outer;
 
             Vec3 spawnPos = copiedContext.getSpawnPos().subtract(0, 1, 0);
             if (isValidForSpawningIgnoreFluids(copiedContext, copiedContext.getLevel(), copiedContext.getSpawnPos()) && (!isValidForSpawning(copiedContext, spawnPos) || !copiedContext.getLevel().getFluidState(BlockPos.containing(spawnPos)).is(Fluids.EMPTY))) {
@@ -81,13 +75,11 @@ public class TryUntilSafeSpawnModification implements SpawnModification {
 
     @Override
     public List<Field<?>> getFields() {
-        if (fieldList != null) {
+        if (fieldList != null)
             return fieldList;
-        }
         fieldList = new ArrayList<>();
-        for (SpawnModification modification : this.functions) {
+        for (SpawnModification modification : this.functions)
             fieldList.addAll(modification.getFields());
-        }
         fieldList.add(this.maxIterations);
         return fieldList;
     }

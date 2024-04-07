@@ -52,9 +52,8 @@ public class SetPositionSpawnModification implements SpawnModification {
     }
 
     private Optional<Double> getOptionalBound(double d) {
-        if (Double.isNaN(d)) {
+        if (Double.isNaN(d))
             return Optional.empty();
-        }
         return Optional.of(d);
     }
 

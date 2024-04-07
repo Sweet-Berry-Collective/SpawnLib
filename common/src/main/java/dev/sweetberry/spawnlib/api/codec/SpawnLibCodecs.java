@@ -18,20 +18,19 @@ public class SpawnLibCodecs {
     public static final Vec3 EMPTY_VEC3 = new Vec3(Double.NaN, Double.NaN, Double.NaN);
 
     public static final Codec<Vec3> OPTIONAL_VEC3 = Codec.either(OPTIONAL_VEC3_OPTIONAL, Vec3.CODEC).xmap(either -> either.map(vec3 -> vec3, vec3 -> vec3), vec3 -> {
-        if (Double.isNaN(vec3.x) || Double.isNaN(vec3.y) || Double.isNaN(vec3.z)) {
+        if (Double.isNaN(vec3.x) || Double.isNaN(vec3.y) || Double.isNaN(vec3.z))
             return Either.left(vec3);
-        }
         return Either.right(vec3);
     });
 
     public static <T> Codec<HolderSet<T>> listOrSingularHolderSet(Codec<HolderSet<T>> holderSetCodec, Codec<Holder<T>> holderCodec) {
-        return Codec.either(holderSetCodec, holderCodec).xmap(either ->
-                either.map(holders -> holders, HolderSet::direct),
-                holders -> {
-                    if (holders.size() == 1) {
-                        return Either.right(holders.get(0));
-                    }
-                    return Either.left(holders);
-                });
+        return Codec
+                .either(holderSetCodec, holderCodec)
+                .xmap(
+                        either -> either.map(holders -> holders, HolderSet::direct),
+                        holders -> holders.size() == 1
+                                ? Either.right(holders.get(0))
+                                : Either.left(holders)
+                );
     }
 }

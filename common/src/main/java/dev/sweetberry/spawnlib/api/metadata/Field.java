@@ -30,9 +30,8 @@ public class Field<T> {
     }
 
     public T get() {
-        if (metadata != null) {
+        if (metadata != null)
             return metadata.get();
-        }
         return value;
     }
 

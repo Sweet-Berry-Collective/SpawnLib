@@ -30,31 +30,26 @@ public class InBoundsSpawnModification implements SpawnModification {
         this.max = max;
     }
 
+    private static double bounded(Optional<Double> min, Optional<Double> max, double value) {
+        if (min.isPresent() && value < min.get())
+            return min.get();
+        if (max.isPresent() && value > max.get())
+            return max.get();
+        return value;
+    }
+
     @Override
     public boolean modify(SpawnContext context) {
-        Vec3 vec3 = context.getSpawnPos();
+        var pos = context.getSpawnPos();
 
-        if (this.getMinX().isPresent() && vec3.x < this.getMinX().get()) {
-            vec3 = new Vec3(this.getMinX().get(), vec3.y, vec3.z);
-        } else if (this.getMaxX().isPresent() && vec3.x > this.getMaxX().get()) {
-            vec3 = new Vec3(this.getMaxX().get(), vec3.y, vec3.z);
-        }
+        pos = new Vec3(
+                bounded(getMinX(), getMaxX(), pos.x),
+                bounded(getMinY(), getMaxY(), pos.y),
+                bounded(getMinZ(), getMaxZ(), pos.z)
+        );
 
-        if (this.getMinY().isPresent() && vec3.y < this.getMinY().get()) {
-            vec3 = new Vec3(vec3.x, this.getMinY().get(), vec3.z);
-        } else if (this.getMaxY().isPresent() && vec3.y > this.getMaxY().get()) {
-            vec3 = new Vec3(vec3.x, this.getMaxY().get(), vec3.z);
-        }
-
-        if (this.getMinZ().isPresent() && vec3.z < this.getMinZ().get()) {
-            vec3 = new Vec3(vec3.x, vec3.y, this.getMinZ().get());
-        } else if (this.getMaxZ().isPresent() && vec3.z > this.getMaxZ().get()) {
-            vec3 = new Vec3(vec3.x, vec3.y, this.getMaxZ().get());
-        }
-
-        if (vec3 != context.getSpawnPos()) {
-            context.setSpawnPos(vec3);
-        }
+        if (pos != context.getSpawnPos())
+            context.setSpawnPos(pos);
         return true;
     }
 
@@ -83,9 +78,8 @@ public class InBoundsSpawnModification implements SpawnModification {
     }
 
     private Optional<Double> getOptionalBound(double value) {
-        if (Double.isNaN(value)) {
+        if (Double.isNaN(value))
             return Optional.empty();
-        }
         return Optional.of(value);
     }
 

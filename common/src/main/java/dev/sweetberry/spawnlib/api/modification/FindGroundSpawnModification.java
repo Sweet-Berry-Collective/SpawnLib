@@ -10,6 +10,7 @@ import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.commands.arguments.HeightmapTypeArgument;
 import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -23,8 +24,7 @@ public class FindGroundSpawnModification implements SpawnModification {
 
     public static final Codec<FindGroundSpawnModification> CODEC = Codec.unit(FindGroundSpawnModification::new);
 
-    public FindGroundSpawnModification() {
-    }
+    public FindGroundSpawnModification() {}
 
     @Override
     public boolean modify(SpawnContext context) {
@@ -50,5 +50,24 @@ public class FindGroundSpawnModification implements SpawnModification {
     @Override
     public List<Field<?>> getFields() {
         return List.of();
+    }
+
+    public Vec3 findGround(SpawnContext context, ServerLevel level, Vec3 pos) {
+        while (true) {
+            // TODO: Come up with something better here.
+            if (pos.y < level.getMinBuildHeight())
+                return pos;
+            var currValid = isValidForSpawning(context, level, pos);
+            var downValid = isValidForSpawning(context, level, pos.subtract(0, 1, 0));
+            if (currValid && !downValid)
+                // This is the lowest valid spot.
+                return pos;
+            if (!currValid)
+                // Move up to check block above
+                pos = pos.add(0, 1, 0);
+            else // Down is always valid here
+                // Move down to check block below
+                pos = pos.subtract(0, 1, 0);
+        }
     }
 }

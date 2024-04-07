@@ -47,24 +47,24 @@ public class ModifiedSpawnsAttachment {
         this(Optional.empty(), Optional.empty(), Map.of());
     }
 
+    private void setIfexists(Map<ResourceKey<ModifiedSpawn>, Object> map, @Nullable Holder<ModifiedSpawn> spawn) {
+        if (spawn == null)
+            return;
+        if (isSpawnSerializable(spawn))
+            map.put(spawn.unwrapKey().get(), ((SerializableSpawnModification<Object>)spawn.value()).getDefaultSerializableValue());
+    }
+
     public Map<ResourceKey<ModifiedSpawn>, Object> createSerializedData(RegistryOps<?> registryOps, Map<ResourceKey<ModifiedSpawn>, Object> loaded) {
         Map<ResourceKey<ModifiedSpawn>, Object> map = new HashMap<>();
 
         Holder<ModifiedSpawn> worldSpawn = ((Duck_MinecraftServer)SpawnLib.getHelper().getServer()).spawnlib$getGlobalSpawn();
-        if (isSpawnSerializable(worldSpawn)) {
-            map.put(worldSpawn.unwrapKey().get(), ((SerializableSpawnModification<Object>)worldSpawn.value()).getDefaultSerializableValue());
-        }
-        if (this.globalSpawn.isPresent() && isSpawnSerializable(this.globalSpawn.get())) {
-            map.put(this.globalSpawn.get().unwrapKey().get(), ((SerializableSpawnModification<Object>)this.globalSpawn.get()).getDefaultSerializableValue());
-        }
-        if (this.localSpawn.isPresent() && isSpawnSerializable(this.localSpawn.get())) {
-            map.put(this.localSpawn.get().unwrapKey().get(), ((SerializableSpawnModification<Object>)localSpawn.get()).getDefaultSerializableValue());
-        }
+        setIfexists(map, worldSpawn);
+        setIfexists(map, globalSpawn.orElse(null));
+        setIfexists(map, localSpawn.orElse(null));
 
         for (Map.Entry<ResourceKey<ModifiedSpawn>, Object> entry : loaded.entrySet()) {
-            if (!isSpawnSerializable(registryOps.getter(SpawnLibRegistryKeys.SPAWN).get().getOrThrow(entry.getKey()))) {
+            if (!isSpawnSerializable(registryOps.getter(SpawnLibRegistryKeys.SPAWN).get().getOrThrow(entry.getKey())))
                 continue;
-            }
             map.put(entry.getKey(), entry.getValue());
         }
 
@@ -77,24 +77,21 @@ public class ModifiedSpawnsAttachment {
 
     @Nullable
     public ModifiedSpawn getGlobalSpawn() {
-        if (globalSpawn.isEmpty() || !globalSpawn.get().isBound()) {
+        if (globalSpawn.isEmpty() || !globalSpawn.get().isBound())
             return null;
-        }
         return globalSpawn.get().value();
     }
 
     @Nullable
     public ModifiedSpawn getLocalSpawn() {
-        if (localSpawn.isEmpty() || !localSpawn.get().isBound()) {
+        if (localSpawn.isEmpty() || !localSpawn.get().isBound())
             return null;
-        }
         return localSpawn.get().value();
     }
 
     public <T> T getData(Holder<ModifiedSpawn> spawnHolder) {
-        if (!this.data.containsKey(spawnHolder)) {
+        if (!this.data.containsKey(spawnHolder))
             return null;
-        }
         return (T) this.data.get(spawnHolder);
     }
 

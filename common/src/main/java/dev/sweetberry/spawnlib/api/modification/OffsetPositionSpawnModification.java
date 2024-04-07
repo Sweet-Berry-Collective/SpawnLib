@@ -33,9 +33,8 @@ public class OffsetPositionSpawnModification implements SpawnModification {
     @Override
     public boolean modify(SpawnContext context) {
         Vec3 vec3 = context.getSpawnPos().add(getX().orElse(0.0), getY().orElse(0.0), getZ().orElse(0.0));
-        if (!vec3.equals(context.getSpawnPos())) {
+        if (!vec3.equals(context.getSpawnPos()))
             context.setSpawnPos(vec3);
-        }
         return true;
     }
 
@@ -52,9 +51,8 @@ public class OffsetPositionSpawnModification implements SpawnModification {
     }
 
     private Optional<Double> getOptionalBound(double value) {
-        if (Double.isNaN(value)) {
+        if (Double.isNaN(value))
             return Optional.empty();
-        }
         return Optional.of(value);
     }
 

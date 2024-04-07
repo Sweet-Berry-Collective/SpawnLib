@@ -39,14 +39,12 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
         }
 
         DataResult<T> functionsInput = ops.get(input, "functions");
-        if (functionsInput.error().isPresent()) {
+        if (functionsInput.error().isPresent())
             return DataResult.error(() -> "Could not decode 'functions' field." + functionsInput.error().get().message());
-        }
         DataResult<Pair<List<SpawnModification>, T>> modificationResult = SpawnModification.CODEC.listOf().decode(ops, functionsInput.result().orElseThrow());
         Optional<Pair<List<SpawnModification>, T>> partialResult = modificationResult.resultOrPartial(s -> SpawnLib.LOGGER.error("Could not decode spawn function. " + s));
-        if (partialResult.isEmpty() || partialResult.get().getFirst().isEmpty()) {
+        if (partialResult.isEmpty() || partialResult.get().getFirst().isEmpty())
             return DataResult.error(() -> "Could not decode spawn, no modifications were specified.");
-        }
         List<SpawnModification> modifications = getSpawnModifications(partialResult, unused, metadata);
 
         return DataResult.success(Pair.of(new ModifiedSpawn(metadata, modifications, unused.isEmpty() ? null : unused.keySet().stream().toList()), input));
@@ -56,7 +54,8 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
     private static <T> List<SpawnModification> getSpawnModifications(Optional<Pair<List<SpawnModification>, T>> partialResult, Map<String, Metadata<Object>> unused, Map<String, Metadata<Object>> metadata) {
         List<SpawnModification> modifications = partialResult.get().getFirst();
         modifications.forEach(modification -> modification.getFields().forEach(field -> {
-            if (field.getKey() == null) return;
+            if (field.getKey() == null)
+                return;
             Metadata<Object> md = unused.getOrDefault(field.getKey(), null);
             if (md != null && md.getType().isOfType(field)) {
                 metadata.put(md.getKey(), md);

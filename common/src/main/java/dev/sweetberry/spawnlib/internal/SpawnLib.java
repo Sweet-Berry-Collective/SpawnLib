@@ -1,5 +1,6 @@
 package dev.sweetberry.spawnlib.internal;
 
+import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ public class SpawnLib {
         SpawnLib.helper = helper;
 
         LOGGER.info("SpawnLib is initializing. Platform: {}", helper.getPlatform().name);
+
+        SpawnLibRegistries.init();
     }
 
     public static PlatformHelper getHelper() {
