@@ -29,7 +29,7 @@ public class SeaLevelSpawnModification implements SpawnModification {
 
     @Override
     public boolean modify(SpawnContext context) {
-        context.setSpawnPos(new Vec3(context.getSpawnPos().x, context.getLevel().getSeaLevel(), context.getSpawnPos().z));
+        context.setSpawnPos(new Vec3(context.getSpawnPos().x, context.getLevel().getChunkSource().getGenerator().getSeaLevel(), context.getSpawnPos().z));
         return true;
     }
 
