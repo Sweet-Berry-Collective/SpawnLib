@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ModifiedSpawn {
-    private ResourceLocation id;
     private final Map<String, Metadata<Object>> metadata;
     private final List<SpawnModification> modifications;
 
@@ -72,16 +71,7 @@ public class ModifiedSpawn {
     }
 
     @ApiStatus.Internal
-    public void setId(ResourceLocation id) {
-        if (this.id != null) {
-            SpawnLib.LOGGER.error("Could not set id '{}' to spawn that already has an id.", id.toString());
-            return;
-        }
-        this.id = id;
-    }
-
-    @ApiStatus.Internal
-    public void logAndClearUnusedMetadata() {
+    public void logAndClearUnusedMetadata(ResourceLocation id) {
         if (unusedMetadata == null) return;
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < unusedMetadata.size(); ++i) {

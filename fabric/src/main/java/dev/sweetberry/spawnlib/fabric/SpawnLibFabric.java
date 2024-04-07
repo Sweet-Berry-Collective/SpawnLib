@@ -43,8 +43,7 @@ public class SpawnLibFabric implements ModInitializer {
 
         DynamicRegistrySetupCallback.EVENT.register(registryView -> {
             registryView.registerEntryAdded(SpawnLibRegistryKeys.SPAWN, (rawId, id, object) -> {
-                object.setId(id);
-                object.logAndClearUnusedMetadata();
+                object.logAndClearUnusedMetadata(id);
             });
         });
 
