@@ -5,18 +5,46 @@
       "default": "minecraft:the_nether"
     },
     "unused": {
-      "type": "spawnlib:dimension",
-      "default": "minecraft:the_nether"
+      "type": "spawnlib:float",
+      "default": 0.5
     },
     "unused_two": {
-      "type": "spawnlib:dimension",
-      "default": "minecraft:the_nether"
+      "type": "spawnlib:int",
+      "default": 2
     }
   },
   "functions": [
     {
       "type": "spawnlib:in_dimension",
       "dimension": "${test}"
+    },
+    {
+      "type": "spawnlib:sea_level"
+    },
+    {
+      "type": "spawnlib:try_until_safe",
+      "max_iterations": 64,
+      "functions": [
+        {
+          "type": "spawnlib:random_offset"
+        },
+        {
+          "type": "spawnlib:find_ground"
+        },
+        {
+          "type": "spawnlib:restrict_to_fluid",
+          "fluids": "minecraft:empty"
+        },
+        {
+          "type": "spawnlib:in_bounds",
+          "min": {
+            "y": 32
+          },
+          "max": {
+            "y": 126
+          }
+        }
+      ]
     }
   ]
 }

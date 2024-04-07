@@ -43,7 +43,6 @@ public class DimensionSpawnModification implements SpawnModification {
     public boolean modify(SpawnContext context) {
         var level = context.getLevel(getDimension());
         context.setLevel(level);
-        context.setSpawnPos(findLowestValidSpawn(context, level, randomSquareOffset(context, level.random, level.getSharedSpawnPos().getCenter(), context.getServer().getSpawnRadius(level))));
         return true;
     }
 

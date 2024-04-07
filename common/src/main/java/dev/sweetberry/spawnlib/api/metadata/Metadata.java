@@ -14,7 +14,7 @@ public class Metadata<T> implements Supplier<T> {
     private final T defaultValue;
     private T value;
 
-    public static final Codec<Metadata<?>> CODEC = SpawnLib.getHelper().getMetadataTypeRegistry().byNameCodec().dispatch(Metadata::getType, MetadataType::getInnerCodec);
+    public static final Codec<Metadata<?>> CODEC = SpawnLibMetadataTypes.METADATA_TYPE.byNameCodec().dispatch(Metadata::getType, MetadataType::getInnerCodec);
 
     public Metadata(String key, MetadataType<T> type, T defaultValue) {
         this.key = key;

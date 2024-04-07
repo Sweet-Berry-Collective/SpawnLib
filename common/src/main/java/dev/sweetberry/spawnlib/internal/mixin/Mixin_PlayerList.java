@@ -61,6 +61,7 @@ public abstract class Mixin_PlayerList {
         if (playerData != null)
             return;
         var spawn = SpawnContext.getSpawn(player);
+        if (spawn == null) return;
         var spawnPos = spawn.getSpawnPos();
         var level = spawn.getLevel();
         player.teleportTo(level, spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);

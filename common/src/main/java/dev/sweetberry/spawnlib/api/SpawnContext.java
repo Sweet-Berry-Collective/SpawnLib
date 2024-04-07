@@ -28,6 +28,11 @@ public class SpawnContext {
         reset();
     }
 
+    public void copy(SpawnContext context) {
+        this.spawnPos = context.spawnPos;
+        this.level = context.level;
+    }
+
     /**
      * Gets the player's spawn
      * */

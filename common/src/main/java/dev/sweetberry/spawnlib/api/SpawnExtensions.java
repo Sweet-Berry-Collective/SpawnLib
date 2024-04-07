@@ -27,7 +27,7 @@ public class SpawnExtensions {
     }
 
     @Nullable
-    public static <T> T getDataFromSpawn(ServerPlayer player, Holder<ModifiedSpawn> priority) {
-        return SpawnLib.getHelper().getAttachment(player).getData(priority);
+    public static <T> T getDataFromSpawn(ServerPlayer player, Holder<ModifiedSpawn> spawnHolder) {
+        return SpawnLib.getHelper().getAttachment(player).getData(spawnHolder);
     }
 }

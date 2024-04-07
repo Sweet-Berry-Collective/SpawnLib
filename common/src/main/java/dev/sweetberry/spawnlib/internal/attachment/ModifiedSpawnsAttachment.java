@@ -26,19 +26,21 @@ public class ModifiedSpawnsAttachment {
     public static final Codec<ModifiedSpawnsAttachment> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             ModifiedSpawn.CODEC.optionalFieldOf("global").forGetter(attachment -> attachment.globalSpawn),
             ModifiedSpawn.CODEC.optionalFieldOf("local").forGetter(attachment -> attachment.localSpawn),
-            SerializableDataCodec.INSTANCE.fieldOf("data").forGetter(attachment -> attachment.serializedData)
+            SerializableDataCodec.INSTANCE.fieldOf("data").forGetter(attachment -> attachment.data)
     ).apply(inst, ModifiedSpawnsAttachment::new));
 
     @Nullable
     private Optional<Holder<ModifiedSpawn>> globalSpawn;
     @Nullable
     private Optional<Holder<ModifiedSpawn>> localSpawn;
-    private Map<ResourceKey<ModifiedSpawn>, Object> serializedData;
 
-    public ModifiedSpawnsAttachment(Optional<Holder<ModifiedSpawn>> globalSpawn, Optional<Holder<ModifiedSpawn>> localSpawn, Map<ResourceKey<ModifiedSpawn>, Object> serializedData) {
+    // TODO: Merge data and metadata.
+    private Map<ResourceKey<ModifiedSpawn>, Object> data;
+
+    public ModifiedSpawnsAttachment(Optional<Holder<ModifiedSpawn>> globalSpawn, Optional<Holder<ModifiedSpawn>> localSpawn, Map<ResourceKey<ModifiedSpawn>, Object> data) {
         this.globalSpawn = globalSpawn;
         this.localSpawn = localSpawn;
-        this.serializedData = serializedData;
+        this.data = data;
     }
 
     public ModifiedSpawnsAttachment() {
@@ -89,11 +91,11 @@ public class ModifiedSpawnsAttachment {
         return localSpawn.get().value();
     }
 
-    public <T> T getData(Holder<ModifiedSpawn> priority) {
-        if (!this.serializedData.containsKey(priority)) {
+    public <T> T getData(Holder<ModifiedSpawn> spawnHolder) {
+        if (!this.data.containsKey(spawnHolder)) {
             return null;
         }
-        return (T) this.serializedData.get(priority);
+        return (T) this.data.get(spawnHolder);
     }
 
 }

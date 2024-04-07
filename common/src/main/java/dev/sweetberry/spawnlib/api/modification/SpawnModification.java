@@ -2,20 +2,24 @@ package dev.sweetberry.spawnlib.api.modification;
 
 import com.mojang.serialization.Codec;
 import dev.sweetberry.spawnlib.api.SpawnContext;
+import dev.sweetberry.spawnlib.api.SpawnLibTags;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
+import dev.sweetberry.spawnlib.internal.registry.SpawnModificationCodecs;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public interface SpawnModification {
-    Codec<SpawnModification> CODEC = SpawnLib.getHelper().getSpawnModificationCodecRegistry().byNameCodec().dispatch(SpawnModification::getCodec, codec -> codec);
+    Codec<SpawnModification> CODEC = SpawnModificationCodecs.SPAWN_MODIFICATION_CODECS.byNameCodec().dispatch(SpawnModification::getCodec, codec -> codec);
 
     /**
      * Modifies the spawn
@@ -40,10 +44,14 @@ public interface SpawnModification {
         return false;
     }
 
-    default boolean isValidForSpawning(SpawnContext context, ServerLevel level, Vec3 pos) {
+    default boolean isValidForSpawningIgnoreFluids(SpawnContext context, ServerLevel level, Vec3 pos) {
         var box = context.getPlayerBoundingBox(pos);
         // This might not be the right method to call, we'll figure that out later.
         return level.noCollision(box);
+    }
+
+    default boolean isValidForSpawning(SpawnContext context, ServerLevel level, Vec3 pos) {
+        return isValidForSpawningIgnoreFluids(context, level, pos) && !level.getFluidState(BlockPos.containing(pos)).is(SpawnLibTags.SPAWN_BLOCKING);
     }
 
     default boolean isValidForSpawning(SpawnContext context, Vec3 pos) {
@@ -62,7 +70,7 @@ public interface SpawnModification {
         return setSpawnIfValid(context, context.getLevel(), pos);
     }
 
-    default Vec3 findLowestValidSpawn(SpawnContext context, ServerLevel level, Vec3 pos) {
+    default Vec3 findGround(SpawnContext context, ServerLevel level, Vec3 pos) {
         while (true) {
             // TODO: Come up with something better here.
             if (pos.y < level.getMinBuildHeight())
