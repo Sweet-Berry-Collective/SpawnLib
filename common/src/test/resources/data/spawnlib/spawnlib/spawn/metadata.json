@@ -33,13 +33,18 @@
         },
         {
           "type": "spawnlib:restrict_to_fluid",
-          "fluids": "minecraft:empty"
+          "fluids": "minecraft:empty",
+          "bounds": [
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0
+          ]
         },
         {
           "type": "spawnlib:in_bounds",
-          "min": {
-            "y": 32
-          },
           "max": {
             "y": 126
           }

@@ -2,8 +2,6 @@ package dev.sweetberry.spawnlib.api.metadata;
 
 import com.mojang.serialization.Codec;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibCodecs;
-import dev.sweetberry.spawnlib.api.modification.InBoundsSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.SpawnModification;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.registry.RegistrationCallback;
 import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
@@ -14,10 +12,10 @@ import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 
@@ -27,6 +25,7 @@ public class SpawnLibMetadataTypes {
     public static final MetadataType<Float> FLOAT = new MetadataType<>(Float.class, Codec.FLOAT);
     public static final MetadataType<Boolean> BOOLEAN = new MetadataType<>(Boolean.class, Codec.BOOL);
     public static final MetadataType<Vec3> VEC3 = new MetadataType<>(Vec3.class, SpawnLibCodecs.OPTIONAL_VEC3);
+    public static final MetadataType<BoundingBox> BOUNDING_BOX = new MetadataType<>(BoundingBox.class, BoundingBox.CODEC);
 
     public static final MetadataType<ResourceKey<Level>> DIMENSION = resourceKey(Level.RESOURCE_KEY_CODEC);
     public static final MetadataType<HolderSet<Block>> BLOCKS = holderSet(Registries.BLOCK, BuiltInRegistries.BLOCK.holderByNameCodec(), BuiltInRegistries.BLOCK.byNameCodec());
@@ -51,7 +50,9 @@ public class SpawnLibMetadataTypes {
         callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("double"), DOUBLE);
         callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("boolean"), BOOLEAN);
         callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("optional_vec3"), VEC3);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("bounding_box"), BOUNDING_BOX);
         callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("dimension"), DIMENSION);
+        callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("blocks"), BLOCKS);
         callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("fluids"), FLUIDS);
         callback.register(SpawnLibRegistries.METADATA_TYPE, SpawnLib.id("heightmap_type"), HEIGHTMAP_TYPE);
     }
