@@ -23,13 +23,13 @@ public class RandomOffsetSpawnModification implements SpawnModification {
 
     public static final Codec<RandomOffsetSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.INT), "radius").forGetter(modification -> modification.radius),
-            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN), "circular").forGetter(modification -> modification.circular)
+            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN), "circular", new Field<>(false)).forGetter(modification -> modification.circular)
     ).apply(inst, RandomOffsetSpawnModification::new));
 
     private final Optional<Field<Integer>> radius;
-    private final Optional<Field<Boolean>> circular;
+    private final Field<Boolean> circular;
 
-    public RandomOffsetSpawnModification(Optional<Field<Integer>> radius, Optional<Field<Boolean>> circular) {
+    public RandomOffsetSpawnModification(Optional<Field<Integer>> radius, Field<Boolean> circular) {
         this.radius = radius;
         this.circular = circular;
     }
@@ -41,7 +41,7 @@ public class RandomOffsetSpawnModification implements SpawnModification {
     }
 
     public boolean isCircular() {
-        return circular.isPresent() && circular.get().get();
+        return circular.get();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class RandomOffsetSpawnModification implements SpawnModification {
     public List<Field<?>> getFields() {
         var list = new ArrayList<Field<?>>();
         radius.ifPresent(list::add);
-        circular.ifPresent(list::add);
+        list.add(circular);
         return list;
     }
 
