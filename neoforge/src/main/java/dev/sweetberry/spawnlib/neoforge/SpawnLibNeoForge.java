@@ -67,7 +67,7 @@ public class SpawnLibNeoForge {
         public static void onGatherData(GatherDataEvent event) {
             for (Holder.Reference<ModifiedSpawn> entry : event.getLookupProvider().join().lookupOrThrow(SpawnLibRegistryKeys.SPAWN).listElements().toList()) {
                 if (entry.isBound()) {
-                    entry.value().logAndClearUnusedMetadata(entry.key().location());
+                    SpawnLib.postInitModifiedSpawn(entry.key().location(), entry.value());
                 }
             }
         }

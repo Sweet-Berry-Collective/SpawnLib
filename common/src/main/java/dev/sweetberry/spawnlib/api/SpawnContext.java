@@ -1,5 +1,6 @@
 package dev.sweetberry.spawnlib.api;
 
+import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.mixin.Accessor_Entity;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * */
 public class SpawnContext {
     private final ServerPlayer player;
+    private SpawnPriority priority;
     private Vec3 spawnPos = Vec3.ZERO;
     private ServerLevel level;
     private boolean obstructed = false;
@@ -29,8 +31,9 @@ public class SpawnContext {
     }
 
     public void copy(SpawnContext context) {
-        this.spawnPos = context.spawnPos;
-        this.level = context.level;
+        priority = context.priority;
+        spawnPos = context.spawnPos;
+        level = context.level;
     }
 
     /**
@@ -38,32 +41,41 @@ public class SpawnContext {
      * */
     @Nullable
     public static SpawnContext getSpawn(ServerPlayer player) {
+        var providers = SpawnLib.getHelper().getAttachment(player).getProviders();
         var context = new SpawnContext(player);
 
         ModifiedSpawn spawn = SpawnExtensions.getLocalSpawn(player);
         if (spawn != null) {
-            if (spawn.modify(context))
+            context.priority = SpawnPriority.LOCAL_PLAYER;
+            if (spawn.modify(context, providers))
                 return context;
             context.obstructed = true;
-            // TODO: set player local spawn to null
+            SpawnExtensions.clearLocalSpawn(player);
         }
 
         context.reset();
         spawn = SpawnExtensions.getGlobalSpawn(player);
-        if (spawn != null && spawn.modify(context))
+        context.priority = SpawnPriority.GLOBAL_PLAYER;
+        if (spawn != null && spawn.modify(context, providers))
             return context;
 
         context.reset();
         spawn = SpawnExtensions.getGlobalSpawn(player.getServer());
-        if (spawn != null && spawn.modify(context)) {
+        context.priority = SpawnPriority.GLOBAL_WORLD;
+        if (spawn != null && spawn.modify(context, providers)) {
             return context;
         }
         return null;
     }
 
     private void reset() {
+        priority = null;
         spawnPos = Vec3.ZERO;
         level = player.getServer().overworld();
+    }
+
+    public SpawnPriority getPriority() {
+        return priority;
     }
 
     /**

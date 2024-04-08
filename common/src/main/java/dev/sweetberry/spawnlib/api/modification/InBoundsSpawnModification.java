@@ -6,11 +6,13 @@ import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,13 +41,13 @@ public class InBoundsSpawnModification implements SpawnModification {
     }
 
     @Override
-    public boolean modify(SpawnContext context) {
+    public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
         var pos = context.getSpawnPos();
 
         pos = new Vec3(
-                bounded(getMinX(), getMaxX(), pos.x),
-                bounded(getMinY(), getMaxY(), pos.y),
-                bounded(getMinZ(), getMaxZ(), pos.z)
+                bounded(getMinX(context, providers), getMaxX(context, providers), pos.x),
+                bounded(getMinY(context, providers), getMaxY(context, providers), pos.y),
+                bounded(getMinZ(context, providers), getMaxZ(context, providers), pos.z)
         );
 
         if (pos != context.getSpawnPos())
@@ -53,28 +55,28 @@ public class InBoundsSpawnModification implements SpawnModification {
         return true;
     }
 
-    public Optional<Double> getMinX() {
-        return this.min.flatMap(field -> getOptionalBound(field.get().x));
+    public Optional<Double> getMinX(SpawnContext context, List<MetadataProvider> providers) {
+        return min.flatMap(field -> getOptionalBound(field.get(context, providers).x));
     }
 
-    public Optional<Double> getMinY() {
-        return this.min.flatMap(field -> getOptionalBound(field.get().y));
+    public Optional<Double> getMinY(SpawnContext context, List<MetadataProvider> providers) {
+        return min.flatMap(field -> getOptionalBound(field.get(context, providers).y));
     }
 
-    public Optional<Double> getMinZ() {
-        return this.min.flatMap(field -> getOptionalBound(field.get().z));
+    public Optional<Double> getMinZ(SpawnContext context, List<MetadataProvider> providers) {
+        return min.flatMap(field -> getOptionalBound(field.get(context, providers).z));
     }
 
-    public Optional<Double> getMaxX() {
-        return this.max.flatMap(field -> getOptionalBound(field.get().x));
+    public Optional<Double> getMaxX(SpawnContext context, List<MetadataProvider> providers) {
+        return max.flatMap(field -> getOptionalBound(field.get(context, providers).x));
     }
 
-    public Optional<Double> getMaxY() {
-        return this.max.flatMap(field -> getOptionalBound(field.get().y));
+    public Optional<Double> getMaxY(SpawnContext context, List<MetadataProvider> providers) {
+        return max.flatMap(field -> getOptionalBound(field.get(context, providers).y));
     }
 
-    public Optional<Double> getMaxZ() {
-        return this.max.flatMap(field -> getOptionalBound(field.get().z));
+    public Optional<Double> getMaxZ(SpawnContext context, List<MetadataProvider> providers) {
+        return max.flatMap(field -> getOptionalBound(field.get(context, providers).z));
     }
 
     private Optional<Double> getOptionalBound(double value) {
@@ -95,6 +97,9 @@ public class InBoundsSpawnModification implements SpawnModification {
 
     @Override
     public List<Field<?>> getFields() {
-        return List.of();
+        List<Field<?>> fields = new ArrayList<>();
+        min.ifPresent(fields::add);
+        max.ifPresent(fields::add);
+        return fields;
     }
 }

@@ -6,6 +6,7 @@ import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -26,28 +27,28 @@ public class OffsetPositionSpawnModification implements SpawnModification {
         this.position = position;
     }
 
-    public Vec3 getPosition() {
-        return position.get();
+    public Vec3 getPosition(SpawnContext context, List<MetadataProvider> providers) {
+        return position.get(context, providers);
     }
 
     @Override
-    public boolean modify(SpawnContext context) {
-        Vec3 vec3 = context.getSpawnPos().add(getX().orElse(0.0), getY().orElse(0.0), getZ().orElse(0.0));
+    public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
+        Vec3 vec3 = context.getSpawnPos().add(getX(context, providers).orElse(0.0), getY(context, providers).orElse(0.0), getZ(context, providers).orElse(0.0));
         if (!vec3.equals(context.getSpawnPos()))
             context.setSpawnPos(vec3);
         return true;
     }
 
-    public Optional<Double> getX() {
-        return getOptionalBound(this.position.get().x);
+    public Optional<Double> getX(SpawnContext context, List<MetadataProvider> providers) {
+        return getOptionalBound(this.position.get(context, providers).x);
     }
 
-    public Optional<Double> getY() {
-        return getOptionalBound(this.position.get().y);
+    public Optional<Double> getY(SpawnContext context, List<MetadataProvider> providers) {
+        return getOptionalBound(this.position.get(context, providers).y);
     }
 
-    public Optional<Double> getZ() {
-        return getOptionalBound(this.position.get().z);
+    public Optional<Double> getZ(SpawnContext context, List<MetadataProvider> providers) {
+        return getOptionalBound(this.position.get(context, providers).z);
     }
 
     private Optional<Double> getOptionalBound(double value) {

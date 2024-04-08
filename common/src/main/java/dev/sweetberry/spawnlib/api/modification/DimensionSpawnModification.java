@@ -6,6 +6,7 @@ import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -35,13 +36,13 @@ public class DimensionSpawnModification implements SpawnModification {
         this(Level.OVERWORLD);
     }
 
-    public ResourceKey<Level> getDimension() {
-        return dimension.get();
+    public ResourceKey<Level> getDimension(SpawnContext context, List<MetadataProvider> providers) {
+        return dimension.get(context, providers);
     }
 
     @Override
-    public boolean modify(SpawnContext context) {
-        var level = context.getLevel(getDimension());
+    public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
+        var level = context.getLevel(getDimension(context, providers));
         context.setLevel(level);
         return true;
     }

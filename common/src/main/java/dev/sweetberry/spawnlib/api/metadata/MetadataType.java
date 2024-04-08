@@ -2,6 +2,7 @@ package dev.sweetberry.spawnlib.api.metadata;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import org.jetbrains.annotations.ApiStatus;
 
 public record MetadataType<T>(Class<T> typeClass, Codec<T> codec) {
 
@@ -9,6 +10,7 @@ public record MetadataType<T>(Class<T> typeClass, Codec<T> codec) {
         return field.getMetadataType().typeClass() == this.typeClass();
     }
 
+    @ApiStatus.Internal
     public Codec<Metadata<T>> getInnerCodec() {
         return RecordCodecBuilder.create(inst -> inst.group(
                 codec.fieldOf("default").forGetter(Metadata::getDefaultValue)

@@ -6,6 +6,7 @@ import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +15,6 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TryUntilSafeSpawnModification implements SpawnModification {
@@ -27,15 +27,14 @@ public class TryUntilSafeSpawnModification implements SpawnModification {
 
     private final Field<Integer> maxIterations;
     private final List<SpawnModification> functions;
-    private List<Field<?>> fieldList;
 
     public TryUntilSafeSpawnModification(Field<Integer> maxIterations, List<SpawnModification> functions) {
         this.maxIterations = maxIterations;
         this.functions = functions;
     }
 
-    public int getMaxIterations() {
-        return this.maxIterations.get();
+    public int getMaxIterations(SpawnContext context, List<MetadataProvider> providers) {
+        return this.maxIterations.get(context, providers);
     }
 
     public List<SpawnModification> getFunctions() {
@@ -43,14 +42,14 @@ public class TryUntilSafeSpawnModification implements SpawnModification {
     }
 
     @Override
-    public boolean modify(SpawnContext context) {
+    public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
         ServerPlayer player = context.getPlayer();
         SpawnContext copiedContext = new SpawnContext(player);
 
-        outer: for (int i = 0; i < getMaxIterations(); ++i) {
+        outer: for (int i = 0; i < getMaxIterations(context, providers); ++i) {
             copiedContext.copy(context);
             for (SpawnModification modification : functions)
-                if (!modification.modify(copiedContext))
+                if (!modification.modify(copiedContext, providers))
                     continue outer;
 
             Vec3 spawnPos = copiedContext.getSpawnPos().subtract(0, 1, 0);
@@ -75,12 +74,13 @@ public class TryUntilSafeSpawnModification implements SpawnModification {
 
     @Override
     public List<Field<?>> getFields() {
-        if (fieldList != null)
-            return fieldList;
-        fieldList = new ArrayList<>();
-        for (SpawnModification modification : this.functions)
-            fieldList.addAll(modification.getFields());
-        fieldList.add(this.maxIterations);
-        return fieldList;
+        return List.of(maxIterations);
     }
+
+    @Override
+    public List<SpawnModification> getInnerModifications() {
+        return functions;
+    }
+
+
 }

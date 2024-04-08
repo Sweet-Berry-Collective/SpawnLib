@@ -21,13 +21,24 @@ public class SpawnExtensions {
         return SpawnLib.getHelper().getAttachment(player).getGlobalSpawn();
     }
 
+    public static void setGlobalSpawn(ServerPlayer player, Holder<ModifiedSpawn> spawn) {
+        SpawnLib.getHelper().getAttachment(player).setGlobalSpawn(spawn);
+    }
+
+    public static void clearGlobalSpawn(ServerPlayer player) {
+        SpawnLib.getHelper().getAttachment(player).clearGlobalSpawn();
+    }
+
     @Nullable
     public static ModifiedSpawn getLocalSpawn(ServerPlayer player) {
         return SpawnLib.getHelper().getAttachment(player).getLocalSpawn();
     }
 
-    @Nullable
-    public static <T> T getDataFromSpawn(ServerPlayer player, Holder<ModifiedSpawn> spawnHolder) {
-        return SpawnLib.getHelper().getAttachment(player).getData(spawnHolder);
+    public static void setLocalSpawn(ServerPlayer player, Holder<ModifiedSpawn> spawn) {
+        SpawnLib.getHelper().getAttachment(player).setLocalSpawn(spawn);
+    }
+
+    public static void clearLocalSpawn(ServerPlayer player) {
+        SpawnLib.getHelper().getAttachment(player).clearLocalSpawn();
     }
 }

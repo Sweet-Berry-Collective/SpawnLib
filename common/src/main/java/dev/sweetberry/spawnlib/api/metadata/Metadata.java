@@ -1,27 +1,15 @@
 package dev.sweetberry.spawnlib.api.metadata;
 
 import com.mojang.serialization.Codec;
-import dev.sweetberry.spawnlib.internal.codec.SerializableDataCodec;
-import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Map;
-import java.util.function.Supplier;
-
-public class Metadata<T> implements Supplier<T> {
+public class Metadata<T> {
     private String key;
     private final MetadataType<T> type;
     private final T defaultValue;
-    private T value;
 
     public static final Codec<Metadata<?>> CODEC = SpawnLibRegistries.METADATA_TYPE.byNameCodec().dispatch(Metadata::getType, MetadataType::getInnerCodec);
-
-    public Metadata(String key, MetadataType<T> type, T defaultValue) {
-        this.key = key;
-        this.type = type;
-        this.defaultValue = defaultValue;
-    }
 
     public Metadata(MetadataType<T> type, T defaultValue) {
         this.type = type;
@@ -35,11 +23,9 @@ public class Metadata<T> implements Supplier<T> {
      */
     @ApiStatus.Internal
     public void setKey(String key) {
+        if (this.key != null)
+            return;
         this.key = key;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
     }
 
     public String getKey() {
@@ -52,12 +38,6 @@ public class Metadata<T> implements Supplier<T> {
 
     public T getDefaultValue() {
         return defaultValue;
-    }
-
-    public T get() {
-        if (value == null)
-            return defaultValue;
-        return value;
     }
 
 }

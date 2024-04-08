@@ -1,5 +1,6 @@
 package dev.sweetberry.spawnlib.internal;
 
+import dev.sweetberry.spawnlib.api.ModifiedSpawn;
 import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -28,5 +29,9 @@ public class SpawnLib {
 
     public static ResourceLocation id(String name) {
         return new ResourceLocation(MODID, name);
+    }
+
+    public static void postInitModifiedSpawn(ResourceLocation id, ModifiedSpawn object) {
+        object.logAndClearUnusedMetadata(id);
     }
 }

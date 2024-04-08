@@ -4,18 +4,13 @@ import com.mojang.serialization.Codec;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.SpawnLibTags;
 import dev.sweetberry.spawnlib.api.metadata.Field;
-import dev.sweetberry.spawnlib.internal.SpawnLib;
+import dev.sweetberry.spawnlib.api.metadata.Metadata;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
-import dev.sweetberry.spawnlib.internal.registry.SpawnModificationCodecs;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,7 +21,7 @@ public interface SpawnModification {
      * Modifies the spawn
      * @return true when the modification was successful, false if it failed
      * */
-    boolean modify(SpawnContext context);
+    boolean modify(SpawnContext context, List<MetadataProvider> providers);
 
     ResourceLocation getId();
 
@@ -36,7 +31,20 @@ public interface SpawnModification {
      * A list of fields within this SpawnModification.
      * Used internally for resolving metadata.
      */
-    List<Field<?>> getFields();
+    default List<Field<?>> getFields() {
+        return List.of();
+    }
+
+    /*
+     * TODO: Comment this.
+     */
+    default List<Metadata<?>> getBuiltInMetadata() {
+        return List.of();
+    }
+
+    default List<SpawnModification> getInnerModifications() {
+        return List.of();
+    }
 
     default boolean isValidForSpawningIgnoreFluids(SpawnContext context, ServerLevel level, Vec3 pos) {
         var box = context.getPlayerBoundingBox(pos);

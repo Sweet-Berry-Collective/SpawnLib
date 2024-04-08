@@ -1,5 +1,11 @@
 package dev.sweetberry.spawnlib.api.metadata;
 
+import dev.sweetberry.spawnlib.api.SpawnContext;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+
 public class Field<T> {
     private final String metadataKey;
     private T value;
@@ -17,10 +23,6 @@ public class Field<T> {
         this.value = value;
     }
 
-    public void setMetadata(Metadata<T> metadata) {
-        this.metadata = metadata;
-    }
-
     public String getKey() {
         return metadataKey;
     }
@@ -29,9 +31,29 @@ public class Field<T> {
         return metadataType;
     }
 
-    public T get() {
+    public void setMetadata(Metadata<T> metadata) {
+        this.metadata = metadata;
+    }
+
+    public T get(SpawnContext context, List<MetadataProvider> providers) {
         if (metadata != null)
-            return metadata.get();
+            for (int i = providers.size() - 1; i >= 0; --i) {
+                String scope = null;
+                String id = metadataKey;
+                if (id.contains("$")) {
+                    String[] params = id.split("\\$", 1);
+                    scope = params[0];
+                    id = params[1];
+                }
+                var value = providers.get(i).getData(context.getPriority(), scope, id, metadataType);
+                if (value.isPresent())
+                    return value.get();
+            }
+        return value;
+    }
+
+    @Nullable
+    public T getDirect() {
         return value;
     }
 

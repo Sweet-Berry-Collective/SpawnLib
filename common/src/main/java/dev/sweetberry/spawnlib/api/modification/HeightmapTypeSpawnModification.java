@@ -6,17 +6,15 @@ import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Optional;
 
 public class HeightmapTypeSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("heightmap");
@@ -31,9 +29,13 @@ public class HeightmapTypeSpawnModification implements SpawnModification {
         this.heightmapType = heightmapType;
     }
 
+    public Heightmap.Types getHeightmapType(SpawnContext context, List<MetadataProvider> providers) {
+        return this.heightmapType.get(context, providers);
+    }
+
     @Override
-    public boolean modify(SpawnContext context) {
-        context.setSpawnPos(Vec3.atBottomCenterOf(context.getLevel().getHeightmapPos(heightmapType.get(), BlockPos.containing(context.getSpawnPos()))));
+    public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
+        context.setSpawnPos(Vec3.atBottomCenterOf(context.getLevel().getHeightmapPos(getHeightmapType(context, providers), BlockPos.containing(context.getSpawnPos()))));
         return true;
     }
 

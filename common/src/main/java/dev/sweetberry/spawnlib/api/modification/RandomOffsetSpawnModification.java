@@ -6,6 +6,7 @@ import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -34,24 +35,24 @@ public class RandomOffsetSpawnModification implements SpawnModification {
         this.circular = circular;
     }
 
-    public int getRadius(SpawnContext context) {
+    public int getRadius(SpawnContext context, List<MetadataProvider> providers) {
         if (radius.isEmpty())
             return context.getServer().getSpawnRadius(context.getLevel());
-        return radius.get().get();
+        return radius.get().get(context, providers);
     }
 
-    public boolean isCircular() {
-        return circular.get();
+    public boolean isCircular(SpawnContext context, List<MetadataProvider> providers) {
+        return circular.get(context, providers);
     }
 
     @Override
-    public boolean modify(SpawnContext context) {
+    public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
         ServerLevel level = context.getLevel();
 
         context.setSpawnPos(
-                isCircular()
-                        ? randomCircularOffset(level.random, context.getSpawnPos(), getRadius(context))
-                        : randomSquareOffset(level.random, context.getSpawnPos(), getRadius(context))
+                isCircular(context, providers)
+                        ? randomCircularOffset(level.random, context.getSpawnPos(), getRadius(context, providers))
+                        : randomSquareOffset(level.random, context.getSpawnPos(), getRadius(context, providers))
         );
         return true;
     }

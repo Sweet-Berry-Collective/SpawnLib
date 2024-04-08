@@ -16,7 +16,7 @@
   "functions": [
     {
       "type": "spawnlib:in_dimension",
-      "dimension": "${test}"
+      "dimension": "$test"
     },
     {
       "type": "spawnlib:sea_level"

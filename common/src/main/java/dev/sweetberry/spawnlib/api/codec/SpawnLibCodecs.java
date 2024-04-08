@@ -3,9 +3,11 @@ package dev.sweetberry.spawnlib.api.codec;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.sweetberry.spawnlib.api.SpawnPriority;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.phys.Vec3;
 
 public class SpawnLibCodecs {
@@ -33,4 +35,6 @@ public class SpawnLibCodecs {
                                 : Either.left(holders)
                 );
     }
+
+    public static final Codec<SpawnPriority> SPAWN_PRIORITY = StringRepresentable.fromEnum(SpawnPriority::values);
 }

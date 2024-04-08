@@ -7,6 +7,7 @@ import dev.sweetberry.spawnlib.api.codec.SpawnLibCodecs;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
+import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
@@ -46,35 +47,33 @@ public class RestrictToBlockSpawnModification implements SpawnModification {
         this.inverted = inverted;
     }
 
-    public HolderSet<Block> getBlocks() {
-        return blocks.get();
+    public HolderSet<Block> getBlocks(SpawnContext context, List<MetadataProvider> providers) {
+        return blocks.get(context, providers);
     }
 
-    public Vec3 getOffset() {
-        return new Vec3(getOffset(offset.get().x), getOffset(offset.get().y), getOffset(offset.get().z));
+    public Vec3 getOffset(SpawnContext context, List<MetadataProvider> providers) {
+        return new Vec3(getOffset(offset.get(context, providers).x), getOffset(offset.get(context, providers).y), getOffset(offset.get(context, providers).z));
     }
 
-    public BoundingBox getBounds() {
-        return this.bounds.get();
+    public BoundingBox getBounds(SpawnContext context, List<MetadataProvider> providers) {
+        return this.bounds.get(context, providers);
     }
 
-    public int getRequiredAmount() {
-        return this.amount.map(Field::get).orElse(bounds.get().getLength().getX() + bounds.get().getLength().getY() + bounds.get().getLength().getZ());
+    public int getRequiredAmount(SpawnContext context, List<MetadataProvider> providers) {
+        return this.amount.map(field -> field.get(context, providers)).orElse(bounds.get(context, providers).getLength().getX() + bounds.get(context, providers).getLength().getY() + bounds.get(context, providers).getLength().getZ());
     }
 
-    public boolean isInverted() {
-        return inverted.get();
+    public boolean isInverted(SpawnContext context, List<MetadataProvider> providers) {
+        return inverted.get(context, providers);
     }
 
 
     @Override
-    public boolean modify(SpawnContext context) {
+    public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
         ServerLevel level = context.getLevel();
         Vec3 spawnPos = context.getSpawnPos();
-
-        long successful = BlockPos.betweenClosedStream(getBounds().moved((int)(spawnPos.x + getOffset().x), (int)(spawnPos.y + getOffset().y), (int)(spawnPos.z + getOffset().z))).filter(pos -> getBlocks().contains(level.getBlockState(pos).getBlockHolder())).count();
-
-        return successful == getRequiredAmount() ^ isInverted();
+        long successful = BlockPos.betweenClosedStream(getBounds(context, providers).moved((int)(spawnPos.x + getOffset(context, providers).x), (int)(spawnPos.y + getOffset(context, providers).y), (int)(spawnPos.z + getOffset(context, providers).z))).filter(pos -> getBlocks(context, providers).contains(level.getBlockState(pos).getBlockHolder())).count();
+        return successful == getRequiredAmount(context, providers) ^ isInverted(context, providers);
     }
 
     private double getOffset(double value) {
