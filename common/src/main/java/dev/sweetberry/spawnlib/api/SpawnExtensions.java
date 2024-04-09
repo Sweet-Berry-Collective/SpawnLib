@@ -39,8 +39,8 @@ public class SpawnExtensions {
         SpawnLib.getHelper().getAttachment(player).createMetadataProviders(spawn, SpawnPriority.GLOBAL_PLAYER, metadata);
     }
 
-    public static void clearGlobalSpawn(ServerPlayer player) {
-        SpawnLib.getHelper().getAttachment(player).clearGlobalSpawn();
+    public static boolean clearGlobalSpawn(ServerPlayer player) {
+        return SpawnLib.getHelper().getAttachment(player).clearGlobalSpawn();
     }
 
     @Nullable
@@ -57,7 +57,7 @@ public class SpawnExtensions {
         SpawnLib.getHelper().getAttachment(player).createMetadataProviders(spawn, SpawnPriority.LOCAL_PLAYER, metadata);
     }
 
-    public static void clearLocalSpawn(ServerPlayer player) {
-        SpawnLib.getHelper().getAttachment(player).clearLocalSpawn();
+    public static boolean clearLocalSpawn(ServerPlayer player) {
+        return SpawnLib.getHelper().getAttachment(player).clearLocalSpawn();
     }
 }

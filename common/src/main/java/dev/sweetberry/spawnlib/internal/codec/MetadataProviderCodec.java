@@ -37,13 +37,16 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
     public <T> DataResult<Pair<List<MetadataProvider>, T>> decode(DynamicOps<T> ops, T input) {
         List<MetadataProvider> metadata = new ArrayList<>();
         for (SpawnPriority priority : priorities) {
-            var mapLikeResult = ops.getMap(ops.getMap(input).getOrThrow(false, SpawnLib.LOGGER::error).get(priority.getSerializedName()));
+            var mapLike = ops.getMap(input);
+            if (mapLike.result().isEmpty())
+                continue;
+            var mapLikeResult = ops.getMap(mapLike.result().get().get(priority.getSerializedName()));
             if (mapLikeResult.result().isEmpty())
                 // We don't want to error when a value isn't present.
                 continue;
-            var mapLike = mapLikeResult.result().get();
+            var priorityMapLike = mapLikeResult.result().get();
             Set<T> metadataSet = new HashSet<>();
-            handleMetadata(ops, mapLike.get("metadata"), mapLike, metadataSet, priority);
+            handleMetadata(ops, priorityMapLike.get("metadata"), priorityMapLike, metadataSet, priority);
             metadataSet.forEach(t -> metadata.add(new DynamicMetadataProvider<>(ops, t)));
         }
         return DataResult.success(Pair.of(metadata, input));

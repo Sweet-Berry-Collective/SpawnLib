@@ -63,8 +63,6 @@ public class ModifiedSpawnsAttachment {
     }
 
     public void createMetadataProviders(Holder<ModifiedSpawn> spawn, SpawnPriority priority, Tag tag) {
-        if (tag instanceof CompoundTag compoundTag && compoundTag.isEmpty())
-            return;
         List<MetadataProvider> providers = new MetadataProviderCodec(priority).decode(NbtOps.INSTANCE, tag).getOrThrow(false, s -> {}).getFirst();
         createProvidersForPriority(providers, priority, spawn);
     }
@@ -130,9 +128,12 @@ public class ModifiedSpawnsAttachment {
         this.globalSpawn = Optional.of(spawn);
     }
 
-    public void clearGlobalSpawn() {
+    public boolean clearGlobalSpawn() {
+        if (this.globalSpawn.isEmpty())
+            return false;
         this.globalSpawn = Optional.empty();
         validateMetadata(this.providers);
+        return true;
     }
 
     @Nullable
@@ -146,9 +147,12 @@ public class ModifiedSpawnsAttachment {
         this.localSpawn = Optional.of(spawn);
     }
 
-    public void clearLocalSpawn() {
+    public boolean clearLocalSpawn() {
+        if (this.localSpawn.isEmpty())
+            return false;
         this.localSpawn = Optional.empty();
         validateMetadata(this.providers);
+        return true;
     }
 
     public List<MetadataProvider> getProviders() {
