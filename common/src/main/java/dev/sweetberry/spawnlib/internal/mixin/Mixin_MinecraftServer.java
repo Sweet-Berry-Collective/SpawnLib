@@ -17,7 +17,6 @@ import net.minecraft.server.WorldStem;
 import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,7 +38,6 @@ import java.util.List;
 public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
     @Shadow @Final protected LevelStorageSource.LevelStorageAccess storageSource;
     @Unique
-    @Nullable
     private Holder<ModifiedSpawn> spawnlib$globalSpawn;
 
     @Unique
