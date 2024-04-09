@@ -49,7 +49,7 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
         if (functionsInput.error().isPresent())
             return DataResult.error(() -> "Could not decode 'functions' field." + functionsInput.error().get().message());
         DataResult<Pair<List<SpawnModification>, T>> modificationResult = SpawnModification.CODEC.listOf().decode(ops, functionsInput.result().orElseThrow());
-        Optional<Pair<List<SpawnModification>, T>> partialResult = modificationResult.resultOrPartial(s -> SpawnLib.LOGGER.error("Could not decode spawn function. " + s));
+        Optional<Pair<List<SpawnModification>, T>> partialResult = modificationResult.resultOrPartial(s -> SpawnLib.LOGGER.error("Could not decode spawn condition. " + s));
         if (partialResult.isEmpty() || partialResult.get().getFirst().isEmpty())
             return DataResult.error(() -> "Could not decode spawn, no modifications were specified.");
         List<SpawnModification> modifications = getSpawnModifications(partialResult.get().getFirst(), metadata, unused);
