@@ -59,6 +59,7 @@ public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
     @Override
     public void spawnlib$setGlobalSpawn(Holder<ModifiedSpawn> value, Tag metadata) {
         spawnlib$globalSpawn = value;
+        spawnlib$metadataProviders = null;
         if (metadata instanceof CompoundTag compoundTag && compoundTag.isEmpty())
             return;
         spawnlib$metadataProviders = MetadataProviderCodec.SERVER_INSTANCE.decode(NbtOps.INSTANCE, metadata).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Could not resolve global spawn metadata upon setting metadata")).getFirst();
