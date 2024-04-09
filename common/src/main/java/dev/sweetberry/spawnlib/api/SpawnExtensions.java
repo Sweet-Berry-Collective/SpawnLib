@@ -10,7 +10,10 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 public class SpawnExtensions {
+    @Nullable
     public static ModifiedSpawn getGlobalSpawn(MinecraftServer server) {
+        if (((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn() == null || !((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn().isBound())
+            return null;
         return ((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn().value();
     }
 
