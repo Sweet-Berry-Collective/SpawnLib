@@ -19,14 +19,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
-    public static final MetadataProviderCodec INSTANCE = new MetadataProviderCodec();
+    public static final MetadataProviderCodec SERVER_INSTANCE = new MetadataProviderCodec(SpawnPriority.GLOBAL_WORLD);
+    public static final MetadataProviderCodec PLAYER_INSTANCE = new MetadataProviderCodec(new SpawnPriority[]{SpawnPriority.GLOBAL_PLAYER, SpawnPriority.LOCAL_PLAYER});
 
-    private MetadataProviderCodec() {}
+    private final SpawnPriority[] priorities;
+
+    public MetadataProviderCodec(SpawnPriority priority) {
+        this(new SpawnPriority[]{priority});
+    }
+
+
+    public MetadataProviderCodec(SpawnPriority[] priorities) {
+        this.priorities = priorities;
+    }
 
     @Override
     public <T> DataResult<Pair<List<MetadataProvider>, T>> decode(DynamicOps<T> ops, T input) {
         List<MetadataProvider> metadata = new ArrayList<>();
-        for (SpawnPriority priority : SpawnPriority.values()) {
+        for (SpawnPriority priority : priorities) {
             var mapLikeResult = ops.getMap(ops.getMap(input).getOrThrow(false, SpawnLib.LOGGER::error).get(priority.getSerializedName()));
             if (mapLikeResult.result().isEmpty())
                 // We don't want to error when a value isn't present.
@@ -76,7 +86,7 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
     @Override
     public <T> DataResult<T> encode(List<MetadataProvider> input, DynamicOps<T> ops, T prefix) {
         Map<T, T> map = new HashMap<>();
-        for (SpawnPriority priority : SpawnPriority.values()) {
+        for (SpawnPriority priority : priorities) {
             try {
                 if (input.stream().filter(provider -> provider instanceof DynamicMetadataProvider<?>).allMatch(provider -> ops.getMap(((DynamicMetadataProvider<T>)provider).getInput()).result().get().get(priority.getSerializedName()) == null))
                     continue;

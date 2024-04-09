@@ -9,11 +9,12 @@ import dev.sweetberry.spawnlib.api.metadata.provider.DynamicMetadataProvider;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.codec.MetadataProviderCodec;
-import dev.sweetberry.spawnlib.internal.duck.Duck_MinecraftServer;
+import dev.sweetberry.spawnlib.internal.codec.RegistryOpsCodec;
 import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +28,9 @@ public class ModifiedSpawnsAttachment {
     public static final ResourceLocation ID = SpawnLib.id("modified_spawns");
 
     public static final Codec<ModifiedSpawnsAttachment> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ModifiedSpawn.CODEC.optionalFieldOf("global").forGetter(attachment -> attachment.globalSpawn),
-            ModifiedSpawn.CODEC.optionalFieldOf("local").forGetter(attachment -> attachment.localSpawn),
-            MetadataProviderCodec.INSTANCE.optionalFieldOf("metadata", new ArrayList<>()).forGetter(attachment -> attachment.providers)
+            RegistryOpsCodec.codec(ModifiedSpawn.CODEC).optionalFieldOf("global").forGetter(attachment -> attachment.globalSpawn),
+            RegistryOpsCodec.codec(ModifiedSpawn.CODEC).optionalFieldOf("local").forGetter(attachment -> attachment.localSpawn),
+            MetadataProviderCodec.PLAYER_INSTANCE.optionalFieldOf("metadata", new ArrayList<>()).forGetter(attachment -> attachment.providers)
     ).apply(inst, ModifiedSpawnsAttachment::new));
 
     private Optional<Holder<ModifiedSpawn>> globalSpawn;
@@ -48,13 +49,24 @@ public class ModifiedSpawnsAttachment {
 
     private List<MetadataProvider> getOrCreateProviders(List<MetadataProvider> providers) {
         if (providers.isEmpty()) {
-            var globalWorldSpawn = ((Duck_MinecraftServer)SpawnLib.getHelper().getServer()).spawnlib$getGlobalSpawn();
-            createProvidersForPriority(providers, SpawnPriority.GLOBAL_WORLD, globalWorldSpawn);
-            createProvidersForPriority(providers, SpawnPriority.GLOBAL_PLAYER, globalSpawn.orElse(null));
-            createProvidersForPriority(providers, SpawnPriority.LOCAL_PLAYER, localSpawn.orElse(null));
+            globalSpawn.ifPresent(spawnHolder -> createProvidersForPriority(providers, SpawnPriority.LOCAL_PLAYER, spawnHolder));
+            localSpawn.ifPresent(spawnHolder -> createProvidersForPriority(providers, SpawnPriority.LOCAL_PLAYER, spawnHolder));
         }
-        // TODO: Validate.
+        validateMetadata(providers);
         return providers;
+    }
+
+
+    // TODO: This.
+    private List<MetadataProvider> validateMetadata(List<MetadataProvider> providers) {
+        return providers;
+    }
+
+    public void createMetadataProviders(Holder<ModifiedSpawn> spawn, SpawnPriority priority, Tag tag) {
+        if (tag instanceof CompoundTag compoundTag && compoundTag.isEmpty())
+            return;
+        List<MetadataProvider> providers = new MetadataProviderCodec(priority).decode(NbtOps.INSTANCE, tag).getOrThrow(false, s -> {}).getFirst();
+        createProvidersForPriority(providers, priority, spawn);
     }
 
     private void createProvidersForPriority(List<MetadataProvider> providers, SpawnPriority priority, @Nullable Holder<ModifiedSpawn> spawn) {
@@ -120,6 +132,7 @@ public class ModifiedSpawnsAttachment {
 
     public void clearGlobalSpawn() {
         this.globalSpawn = Optional.empty();
+        validateMetadata(this.providers);
     }
 
     @Nullable
@@ -135,6 +148,7 @@ public class ModifiedSpawnsAttachment {
 
     public void clearLocalSpawn() {
         this.localSpawn = Optional.empty();
+        validateMetadata(this.providers);
     }
 
     public List<MetadataProvider> getProviders() {

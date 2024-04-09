@@ -1,9 +1,5 @@
 package dev.sweetberry.spawnlib.fabric;
 
-import com.mojang.serialization.Codec;
-import dev.sweetberry.spawnlib.api.metadata.MetadataType;
-import dev.sweetberry.spawnlib.api.modification.SpawnModification;
-import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import dev.sweetberry.spawnlib.internal.Platform;
 import dev.sweetberry.spawnlib.internal.PlatformHelper;
 import dev.sweetberry.spawnlib.internal.attachment.ModifiedSpawnsAttachment;

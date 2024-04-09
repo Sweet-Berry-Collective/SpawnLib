@@ -4,19 +4,18 @@ import dev.sweetberry.spawnlib.api.ModifiedSpawn;
 import dev.sweetberry.spawnlib.api.SpawnLibRegistryKeys;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
+import dev.sweetberry.spawnlib.internal.SpawnLibCommands;
 import dev.sweetberry.spawnlib.internal.attachment.ModifiedSpawnsAttachment;
-import dev.sweetberry.spawnlib.internal.duck.Duck_MinecraftServer;
 import dev.sweetberry.spawnlib.internal.registry.RegistrationCallback;
 import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import dev.sweetberry.spawnlib.internal.registry.SpawnModificationCodecs;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
@@ -76,9 +75,8 @@ public class SpawnLibNeoForge {
     @Mod.EventBusSubscriber(modid = SpawnLib.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class ForgeEvents {
         @SubscribeEvent
-        public static void handleSpawnRegistryValues(ServerStartedEvent event) {
-            // TODO: Testing code, remove later.
-            ((Duck_MinecraftServer)event.getServer()).spawnlib$setGlobalSpawn(event.getServer().registryAccess().registry(SpawnLibRegistryKeys.SPAWN).orElseThrow().getHolderOrThrow(ResourceKey.create(SpawnLibRegistryKeys.SPAWN, SpawnLib.id("metadata"))));
+        public static void registerCommands(RegisterCommandsEvent event) {
+            SpawnLibCommands.init(event.getDispatcher(), event.getBuildContext(), event.getCommandSelection());
         }
     }
 }

@@ -9,14 +9,11 @@ import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.resources.RegistryOps;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 public class DynamicMetadataProvider<TOps> implements MetadataProvider {
     private final RegistryOps<TOps> ops;
     private final TOps input;
-    private final List<String> validMetadataNames = Arrays.stream(SpawnPriority.values()).map(SpawnPriority::getSerializedName).toList();
 
     public DynamicMetadataProvider(DynamicOps<TOps> ops, TOps input) {
         this.ops = ops instanceof RegistryOps<TOps> registryOps

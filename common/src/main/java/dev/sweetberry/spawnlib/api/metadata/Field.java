@@ -36,7 +36,7 @@ public class Field<T> {
     }
 
     public T get(SpawnContext context, List<MetadataProvider> providers) {
-        if (metadata != null)
+        if (metadata != null) {
             for (int i = providers.size() - 1; i >= 0; --i) {
                 String scope = null;
                 String id = metadataKey;
@@ -49,6 +49,8 @@ public class Field<T> {
                 if (value.isPresent())
                     return value.get();
             }
+            return metadata.getDefaultValue();
+        }
         return value;
     }
 
