@@ -84,7 +84,7 @@ public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
                             new FileInputStream(file)
                     ),
                     NbtAccounter.unlimitedHeap()
-            );
+            ).getCompound("spawnlib");
             if (tag.contains("spawn"))
                 spawnlib$globalSpawn = ModifiedSpawn.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, this.registryAccess()), tag.getCompound("spawn")).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Could not resolve global spawn from spawnlib.dat")).getFirst();
             if (tag.contains("metadata"))
