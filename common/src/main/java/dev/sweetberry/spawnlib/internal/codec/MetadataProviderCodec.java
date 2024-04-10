@@ -9,6 +9,7 @@ import dev.sweetberry.spawnlib.api.SpawnPriority;
 import dev.sweetberry.spawnlib.api.metadata.provider.DynamicMetadataProvider;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,23 +99,29 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
                     var priorityMap = ops.getMap(ops.getMap(t).result().get().get(string));
                     if (priorityMap.result().isEmpty())
                         return false;
+                    return hasNewValue(keys[0], ops, priorityMap.result().get(), "");
+                }).allMatch(provider -> ops.getMap(((DynamicMetadataProvider<T>)provider).getInput()).result().get().get(priority.getSerializedName()) == null))
+                    continue;
+                map.putAll(input.stream().filter(provider -> {
+                    if (!(provider instanceof DynamicMetadataProvider<?> dynamic))
+                        return false;
+                    T t = (T) dynamic.getInput();
+                    var initialMap = ops.getMap(t);
+                    if (initialMap.result().isEmpty())
+                        return false;
+                    var priorityMap = ops.getMap(ops.getMap(t).result().get().get(string));
+                    if (priorityMap.result().isEmpty())
+                        return false;
                     boolean bl = hasNewValue(keys[0], ops, priorityMap.result().get(), "");
                     if (bl)
                         keys[0].addAll(getValues(ops, priorityMap.result().get(), ""));
                     return bl;
-                }).allMatch(provider -> ops.getMap(((DynamicMetadataProvider<T>)provider).getInput()).result().get().get(priority.getSerializedName()) == null))
-                    continue;
-                map.putAll(input.stream().filter(provider -> provider instanceof DynamicMetadataProvider<?>).map(provider -> {
+                }).map(provider -> {
                     DynamicMetadataProvider<T> newProvider = ((DynamicMetadataProvider<?>) provider).convert(ops);
                     return newProvider.getInput();
                 }).collect(Collector.of(
                         () -> new HashMap<T, T>(),
-                        (hashMap, object) -> {
-                            T value = ops.getMap(object).getOrThrow(false, s -> SpawnLib.LOGGER.error("Failed to encode metadata providers for {}. {}", ops.getStringValue(string), s)).get(priority.getSerializedName());
-                            if (value == null)
-                                return;
-                            hashMap.put(string, value);
-                        },
+                        (hashMap, object) -> mergeMaps(hashMap, null, ops.getMap(object).result().get(), ops),
                         (map1, map2) -> {
                             map1.putAll(map2);
                             return map1;
@@ -122,7 +129,8 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
                         hashMap -> hashMap
                 )));
             } catch (Exception ex) {
-                SpawnLib.LOGGER.warn("Could not encode metadata providers for priority {}. {}", priority.getSerializedName(), ex.toString());
+                SpawnLib.LOGGER.warn("Could not encode metadata providers for priority {}. {}", priority.getSerializedName(), ex);
+                ex.printStackTrace();
             }
         }
         return ops.mergeToMap(prefix, map);
@@ -156,5 +164,27 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
                 return true;
         }
         return false;
+    }
+
+
+    private static <T> Map<T, T> mergeMaps(@Nullable Map<T, T> initialMap, @Nullable String prefix, MapLike<T> innerMap, DynamicOps<T> ops) {
+        Map<T, T> map = initialMap != null ? initialMap : new HashMap<>();
+        for (Pair<T, T> entry : innerMap.entries().toList()) {
+            var key = ops.getStringValue(entry.getFirst());
+            if (key.result().isEmpty() || key.result().get().equals("value"))
+                continue;
+            Map<T, T> iMap = map;
+            String[] prefixes = prefix != null ? prefix.split("\\.") : new String[]{};
+            for (int i = 0; i < prefixes.length; ++i) {
+                String p = prefixes[i];
+                for (int j = 0; j < i; ++j)  {
+                    iMap.put(ops.createString(p), iMap.getOrDefault(ops.createString(prefixes[j]), ops.emptyMap()));
+                }
+                map = mergeMaps(map, prefix + entry.getFirst() + ".", ops.getMap(iMap.get(ops.createString(p))).result().get(), ops);
+            }
+            if (prefixes.length == 0)
+                map.put(entry.getFirst(), entry.getSecond());
+        }
+        return map;
     }
 }

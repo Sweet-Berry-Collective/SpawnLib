@@ -7,7 +7,6 @@ import com.mojang.serialization.DynamicOps;
 import dev.sweetberry.spawnlib.api.ModifiedSpawn;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.Metadata;
-import dev.sweetberry.spawnlib.api.metadata.MetadataType;
 import dev.sweetberry.spawnlib.api.modification.SpawnModification;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
@@ -67,16 +66,15 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
     }
 
     private static void handleInnerBuiltInMetadata(SpawnModification modification, List<Metadata<Object>> metadata, String prefix) {
+        Map<SpawnModification, Integer> indexMap = new HashMap<>();
+        String id = prefix + modification.getId() + "$" + indexMap.getOrDefault(modification, 0);
         if (!modification.getBuiltInMetadata().isEmpty()) {
-            Map<MetadataType<?>, Integer> indexMap = new HashMap<>();
             modification.getBuiltInMetadata().forEach(md -> {
-                MetadataType<?> metadataType = md.getType();
-                String id = prefix + modification.getId() + "$" + indexMap.getOrDefault(metadataType, 0);
                 metadata.add((Metadata<Object>) modification.getBuiltInMetadata().stream().filter(md1 -> md1.getKey() == md.getKey()).findAny().get());
-                indexMap.put(metadataType, indexMap.getOrDefault(metadataType, 0));
-                modification.getInnerModifications().forEach(modification1 -> handleInnerBuiltInMetadata(modification, metadata, id));
+                indexMap.put(modification, indexMap.getOrDefault(modification, 0));
             });
         }
+        modification.getInnerModifications().forEach(modification1 -> handleInnerBuiltInMetadata(modification1, metadata, id));
     }
 
     private static void handleInnerFieldMetadata(SpawnModification modification, List<Metadata<Object>> metadata, List<Metadata<Object>> unused) {
