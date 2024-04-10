@@ -41,29 +41,25 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
             var mapLike = ops.getMap(input);
             if (mapLike.result().isEmpty())
                 continue;
-            var mapLikeResult = ops.getMap(mapLike.result().get().get(priority.getSerializedName()));
+            var mapLikeT = mapLike.result().get().get(priority.getSerializedName());
+            if (mapLikeT == null)
+                // We don't want to error when a value isn't present.
+                continue;
+            var mapLikeResult = ops.getMap(mapLikeT);
             if (mapLikeResult.result().isEmpty())
                 // We don't want to error when a value isn't present.
                 continue;
             var priorityMapLike = mapLikeResult.result().get();
             Set<T> metadataSet = new HashSet<>();
-            handleMetadata(ops, priorityMapLike.get("metadata"), priorityMapLike, metadataSet, priority);
+            T value = handleInnerMetadata(ops, mapLikeT, priorityMapLike);
+            metadataSet.add(ops.createMap(Map.of(ops.createString(priority.getSerializedName()), value)));
             metadataSet.forEach(t -> metadata.add(new DynamicMetadataProvider<>(ops, t)));
         }
         return DataResult.success(Pair.of(metadata, input));
     }
 
-    private static <T> void handleMetadata(DynamicOps<T> ops, T mapValue,
-                                           MapLike<T> baseMapLike, Set<T> metadataSet,
-                                           SpawnPriority priority) {
-        if (baseMapLike.get("spawn") == null)
-            return;
-
-        MapLike<T> mapLikeValue = ops.getMap(mapValue).getOrThrow(false, SpawnLib.LOGGER::error);
-        T value = handleInnerMetadata(ops, mapValue, mapLikeValue);
-
-        metadataSet.add(ops.createMap(Map.of(ops.createString(priority.getSerializedName()), value)));
-    }
+    private static <T> void handleMetadata(DynamicOps<T> ops, T mapValue, Set<T> metadataSet, SpawnPriority priority) {
+        }
 
     private static <T> T handleInnerMetadata(DynamicOps<T> ops, T existingMap, MapLike<T> mapLike) {
         for (Pair<T, T> entries : mapLike.entries().toList()) {
