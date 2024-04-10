@@ -109,14 +109,12 @@ public class ModifiedSpawnsAttachment {
     }
 
     @Nullable
-    public ModifiedSpawn getGlobalSpawn() {
-        if (globalSpawn.isEmpty() || !globalSpawn.get().isBound())
-            return null;
-        return globalSpawn.get().value();
+    public Holder<ModifiedSpawn> getGlobalSpawn() {
+        return globalSpawn.orElse(null);
     }
 
     public void setGlobalSpawn(Holder<ModifiedSpawn> spawn) {
-        this.globalSpawn = Optional.of(spawn);
+        globalSpawn = Optional.of(spawn);
         createProvidersForPriority(providers, SpawnPriority.GLOBAL_PLAYER, globalSpawn.get());
     }
 
@@ -129,22 +127,20 @@ public class ModifiedSpawnsAttachment {
     }
 
     @Nullable
-    public ModifiedSpawn getLocalSpawn() {
-        if (localSpawn.isEmpty() || !localSpawn.get().isBound())
-            return null;
-        return localSpawn.get().value();
+    public Holder<ModifiedSpawn> getLocalSpawn() {
+        return localSpawn.orElse(null);
     }
 
     public void setLocalSpawn(Holder<ModifiedSpawn> spawn) {
-        this.localSpawn = Optional.of(spawn);
+        localSpawn = Optional.of(spawn);
         createProvidersForPriority(providers, SpawnPriority.LOCAL_PLAYER, localSpawn.get());
     }
 
     public boolean clearLocalSpawn() {
-        if (this.localSpawn.isEmpty())
+        if (localSpawn.isEmpty())
             return false;
-        this.localSpawn = Optional.empty();
-        validateMetadata(this.providers);
+        localSpawn = Optional.empty();
+        validateMetadata(providers);
         return true;
     }
 

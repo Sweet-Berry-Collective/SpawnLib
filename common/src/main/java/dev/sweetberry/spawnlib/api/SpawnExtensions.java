@@ -11,10 +11,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class SpawnExtensions {
     @Nullable
-    public static ModifiedSpawn getGlobalSpawn(MinecraftServer server) {
-        if (((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn() == null || !((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn().isBound())
+    public static Holder<ModifiedSpawn> getGlobalSpawn(MinecraftServer server) {
+        if (((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn() == null)
             return null;
-        return ((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn().value();
+        return ((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn();
     }
 
     public static void setGlobalSpawn(MinecraftServer server, Holder<ModifiedSpawn> spawn) {
@@ -26,7 +26,7 @@ public class SpawnExtensions {
     }
 
     @Nullable
-    public static ModifiedSpawn getGlobalSpawn(ServerPlayer player) {
+    public static Holder<ModifiedSpawn> getGlobalSpawn(ServerPlayer player) {
         return SpawnLib.getHelper().getAttachment(player).getGlobalSpawn();
     }
 
@@ -44,7 +44,7 @@ public class SpawnExtensions {
     }
 
     @Nullable
-    public static ModifiedSpawn getLocalSpawn(ServerPlayer player) {
+    public static Holder<ModifiedSpawn> getLocalSpawn(ServerPlayer player) {
         return SpawnLib.getHelper().getAttachment(player).getLocalSpawn();
     }
 

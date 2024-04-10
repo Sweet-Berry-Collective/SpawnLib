@@ -54,64 +54,100 @@ public class SpawnLibCommands {
                     .then(getNode(priority));
         }
         return Commands
-                .literal("player").then(Commands
-                    .argument("players", EntityArgument.players())
-                        .then(setNode(priority))
-                        .then(getNode(priority))
-                        .then(clearNode(priority)));
+                .literal("player")
+                .then(getNode(priority))
+                .then(setNode(priority))
+                .then(clearNode(priority));
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> setNode(SpawnPriority priority) {
-        return Commands
-                .literal("set").then(Commands
+        var command = Commands
+                .literal("set");
+
+        if (priority != SpawnPriority.GLOBAL_WORLD)
+            return command.then(Commands
+                    .argument("players", EntityArgument.players())
+                    .then(Commands
+                            .argument("id", ResourceKeyArgument.key(SpawnLibRegistryKeys.SPAWN))
+                            .executes(context -> set(context, priority, false))
+                            .then(Commands
+                                    .argument("data", NbtTagArgument.nbtTag())
+                                    .executes(context -> set(context, priority, true))
+                            )));
+
+        return command.then(Commands
                     .argument("id", ResourceKeyArgument.key(SpawnLibRegistryKeys.SPAWN))
                     .executes(context -> set(context, priority, false))
                     .then(Commands
                         .argument("data", NbtTagArgument.nbtTag())
                         .executes(context -> set(context, priority, true))
                     ));
-
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> getNode(SpawnPriority priority) {
-        return Commands
-                .literal("get")
-                .executes(context -> get(context, priority));
+        var command = Commands
+                .literal("get");
 
+        if (priority != SpawnPriority.GLOBAL_WORLD)
+            return command.then(Commands
+                    .argument("player", EntityArgument.player())
+                    .executes(context -> get(context, priority)));
+
+        return command.executes(context -> get(context, priority));
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> clearNode(SpawnPriority priority) {
         return Commands
                 .literal("clear")
-                .executes(context -> clear(context, priority));
+                .then(Commands
+                        .argument("players", EntityArgument.players())
+                        .executes(context -> clear(context, priority)));
 
     }
 
     private static int set(CommandContext<CommandSourceStack> context, SpawnPriority priority, boolean specifiedData) throws CommandSyntaxException {
-        Holder<ModifiedSpawn> spawnHolder = resolveKey(context, "id");
+        Holder<ModifiedSpawn> holder = resolveKey(context, "id");
         Tag tag = specifiedData ? NbtTagArgument.getNbtTag(context, "data") : new CompoundTag();
         Collection<ServerPlayer> players = priority != SpawnPriority.GLOBAL_WORLD ? EntityArgument.getPlayers(context, "players") : List.of();
         switch (priority) {
             case GLOBAL_WORLD -> {
-                SpawnExtensions.setGlobalSpawn(context.getSource().getServer(), spawnHolder, tag);
-                logSetSuccess(context, players, spawnHolder, priority);
+                SpawnExtensions.setGlobalSpawn(context.getSource().getServer(), holder, tag);
+                logSetSuccess(context, players, holder, priority);
                 return 1;
             }
             case GLOBAL_PLAYER -> {
-                players.forEach(player -> SpawnExtensions.setGlobalSpawn(player, spawnHolder, tag));
-                logSetSuccess(context, players, spawnHolder, priority);
+                players.forEach(player -> SpawnExtensions.setGlobalSpawn(player, holder, tag));
+                logSetSuccess(context, players, holder, priority);
                 return players.size();
             }
             case LOCAL_PLAYER -> {
-                players.forEach(player -> SpawnExtensions.setLocalSpawn(player, spawnHolder, tag));
-                logSetSuccess(context, players, spawnHolder, priority);
+                players.forEach(player -> SpawnExtensions.setLocalSpawn(player, holder, tag));
+                logSetSuccess(context, players, holder, priority);
                 return players.size();
             }
         }
         return 0;
     }
 
-    private static int get(CommandContext<CommandSourceStack> context, SpawnPriority priority) {
+    private static int get(CommandContext<CommandSourceStack> context, SpawnPriority priority) throws CommandSyntaxException {
+        ServerPlayer player = priority != SpawnPriority.GLOBAL_WORLD ? EntityArgument.getPlayer(context, "player") : null;
+        switch (priority) {
+            case GLOBAL_WORLD -> {
+                Holder<ModifiedSpawn> holder = SpawnExtensions.getGlobalSpawn(context.getSource().getServer());
+                logGetSuccess(context, null, holder, priority);
+                return holder != null && holder.isBound() ? 1 : 0;
+            }
+            case GLOBAL_PLAYER -> {
+                Holder<ModifiedSpawn> holder = SpawnExtensions.getGlobalSpawn(player);
+                logGetSuccess(context, player, holder, priority);
+                return holder != null && holder.isBound() ? 1 : 0;
+            }
+            case LOCAL_PLAYER -> {
+                Holder<ModifiedSpawn> holder = SpawnExtensions.getLocalSpawn(player);
+                logGetSuccess(context, player, holder, priority);
+                return holder != null && holder.isBound() ? 1 : 0;
+            }
+        }
         return 0;
     }
 
@@ -152,13 +188,28 @@ public class SpawnLibCommands {
             context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.set.success.single", "Set " + priorityName + " spawn to " + spawn.unwrapKey().get().location() + " for " + players.stream().findAny().get().getScoreboardName() + ".", priorityName, spawn.unwrapKey().get().location(), players.stream().findAny().get().getScoreboardName()), true);
     }
 
+    private static void logGetSuccess(CommandContext<CommandSourceStack> context, @Nullable ServerPlayer player, Holder<ModifiedSpawn> spawn, SpawnPriority priority) {
+        String priorityName = priority == SpawnPriority.LOCAL_PLAYER ? "local" : "global";
+        if (player == null) {
+            if (spawn != null && spawn.isBound())
+                context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.get.success.world", "The current world spawn is " + spawn.unwrapKey().get().location() + ".", spawn.unwrapKey().get().location()), true);
+            else
+                context.getSource().sendFailure(Component.translatableWithFallback("commands.spawnlib.get.fail.world", "The current world does not have a spawn."));
+            return;
+        }
+        if (spawn != null && spawn.isBound())
+            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.get.success.player", "The current " + priorityName + " spawn for " + player.getScoreboardName() + " is " + spawn.unwrapKey().get().location() + ".", priorityName, player.getScoreboardName(), spawn.unwrapKey().get().location()), true);
+        else
+            context.getSource().sendFailure(Component.translatableWithFallback("commands.spawnlib.get.fail.player",  player.getScoreboardName() + " does not have a " + priorityName + "spawn.", player.getScoreboardName(), priorityName));
+    }
+
     private static void logClearSuccess(CommandContext<CommandSourceStack> context, @Nullable String playerName, int amount, boolean isSingular, SpawnPriority priority) {
         String priorityName = priority == SpawnPriority.LOCAL_PLAYER ? "local" : "global";
         if (amount == 0) {
             if (isSingular)
                 context.getSource().sendFailure(Component.translatableWithFallback("commands.spawnlib.clear.fail.single", playerName + " does not have a " + priorityName + " spawn.", priorityName));
             else
-                context.getSource().sendFailure(Component.translatableWithFallback("commands.spawnlib.clear.fail.multiple", "The specified players do not have a " + priorityName + " spawn.", priorityName));
+                context.getSource().sendFailure(Component.translatableWithFallback("commands.spawnlib.clear.fail.multiple", "All of the specified players do not have a " + priorityName + " spawn.", priorityName));
             return;
         }
         if (amount > 1)
