@@ -10,7 +10,6 @@ import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.codec.MetadataProviderCodec;
 import dev.sweetberry.spawnlib.internal.codec.RegistryOpsCodec;
-import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -49,7 +48,7 @@ public class ModifiedSpawnsAttachment {
 
     private List<MetadataProvider> getOrCreateProviders(List<MetadataProvider> providers) {
         if (providers.isEmpty()) {
-            globalSpawn.ifPresent(spawnHolder -> createProvidersForPriority(providers, SpawnPriority.LOCAL_PLAYER, spawnHolder));
+            globalSpawn.ifPresent(spawnHolder -> createProvidersForPriority(providers, SpawnPriority.GLOBAL_PLAYER, spawnHolder));
             localSpawn.ifPresent(spawnHolder -> createProvidersForPriority(providers, SpawnPriority.LOCAL_PLAYER, spawnHolder));
         }
         validateMetadata(providers);
@@ -75,7 +74,7 @@ public class ModifiedSpawnsAttachment {
         for (var metadata : spawn.value().getMetadata()) {
             String[] innerKeys = metadata.getKey().split("\\$");
             String prefix = metadata.getKey().split("\\$", 1)[0];
-            metadataTags.put(prefix, createInnerKeyNbt(getPreviousNbt(metadataTags, prefix), metadata, prefix, innerKeys, metadataTags, priority, spawn));
+            metadataTags.put(prefix, createInnerKeyNbt(getPreviousNbt(metadataTags, prefix), metadata, prefix, innerKeys, metadataTags, priority));
         }
         metadataTags.values().forEach(tag -> providers.add(new DynamicMetadataProvider<>(NbtOps.INSTANCE, tag)));
     }
@@ -85,24 +84,16 @@ public class ModifiedSpawnsAttachment {
     }
 
     private static CompoundTag createInnerKeyNbt(CompoundTag oldTag, Metadata<Object> metadata, String prefix, String[] innerKeys,
-                                          Map<String, CompoundTag> metadataTags,
-                                          SpawnPriority priority, Holder<ModifiedSpawn> spawn) {
-        if (!metadataTags.containsKey(prefix)) {
+                                          Map<String, CompoundTag> metadataTags, SpawnPriority priority) {
+        if (!metadataTags.containsKey(prefix))
             metadataTags.put(prefix, new CompoundTag());
-            var innerTag = metadataTags.get(prefix);
-            innerTag.put(priority.getSerializedName(), new CompoundTag());
-            var priorityTag = innerTag.getCompound(priority.getSerializedName());
-            priorityTag.putString("spawn", spawn.unwrapKey().get().location().toString());
-        }
         var innerTag = metadataTags.get(prefix);
-        var priorityTag = innerTag.getCompound(priority.getSerializedName());
         var metadataTag = metadata.getType().codec().encodeStart(NbtOps.INSTANCE, metadata.getDefaultValue()).map(tag1 -> {
             var tempTag = oldTag.copy();
             for (int i = 0; i < innerKeys.length; ++i) {
                 if (i == innerKeys.length - 1) {
                     var addedTempTag = new CompoundTag();
                     addedTempTag.put("value", tag1);
-                    addedTempTag.putString("type", SpawnLibRegistries.METADATA_TYPE.getKey(metadata.getType()).toString());
                     tempTag.put(innerKeys[i], addedTempTag);
                 } else if (tempTag.contains(innerKeys[i])) {
                     tempTag = tempTag.copy();
@@ -113,7 +104,7 @@ public class ModifiedSpawnsAttachment {
             }
             return tempTag;
         }).getOrThrow(false, s -> SpawnLib.LOGGER.warn("Failed to encode value '{}' to attachment. {}", metadata.getKey(), s));
-        priorityTag.put("metadata", metadataTag);
+        innerTag.put(priority.getSerializedName(), metadataTag);
         return metadataTags.get(prefix);
     }
 
@@ -126,6 +117,7 @@ public class ModifiedSpawnsAttachment {
 
     public void setGlobalSpawn(Holder<ModifiedSpawn> spawn) {
         this.globalSpawn = Optional.of(spawn);
+        getOrCreateProviders(this.providers);
     }
 
     public boolean clearGlobalSpawn() {
@@ -145,6 +137,7 @@ public class ModifiedSpawnsAttachment {
 
     public void setLocalSpawn(Holder<ModifiedSpawn> spawn) {
         this.localSpawn = Optional.of(spawn);
+        getOrCreateProviders(this.providers);
     }
 
     public boolean clearLocalSpawn() {
