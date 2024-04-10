@@ -117,7 +117,7 @@ public class ModifiedSpawnsAttachment {
 
     public void setGlobalSpawn(Holder<ModifiedSpawn> spawn) {
         this.globalSpawn = Optional.of(spawn);
-        getOrCreateProviders(this.providers);
+        createProvidersForPriority(providers, SpawnPriority.GLOBAL_PLAYER, globalSpawn.get());
     }
 
     public boolean clearGlobalSpawn() {
@@ -137,7 +137,7 @@ public class ModifiedSpawnsAttachment {
 
     public void setLocalSpawn(Holder<ModifiedSpawn> spawn) {
         this.localSpawn = Optional.of(spawn);
-        getOrCreateProviders(this.providers);
+        createProvidersForPriority(providers, SpawnPriority.LOCAL_PLAYER, localSpawn.get());
     }
 
     public boolean clearLocalSpawn() {

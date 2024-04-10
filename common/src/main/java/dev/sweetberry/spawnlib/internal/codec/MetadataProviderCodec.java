@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Collector;
 
 public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
     public static final MetadataProviderCodec SERVER_INSTANCE = new MetadataProviderCodec(SpawnPriority.GLOBAL_WORLD);
@@ -86,17 +86,74 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
         Map<T, T> map = new HashMap<>();
         for (SpawnPriority priority : priorities) {
             try {
-                if (input.stream().filter(provider -> provider instanceof DynamicMetadataProvider<?>).allMatch(provider -> ops.getMap(((DynamicMetadataProvider<T>)provider).getInput()).result().get().get(priority.getSerializedName()) == null))
-                    continue;
+                final List<String>[] keys = new List[]{new ArrayList<>()};
                 T string = ops.createString(priority.getSerializedName());
+                if (input.stream().filter(provider -> {
+                    if (!(provider instanceof DynamicMetadataProvider<?> dynamic))
+                        return false;
+                    T t = (T) dynamic.getInput();
+                    var initialMap = ops.getMap(t);
+                    if (initialMap.result().isEmpty())
+                        return false;
+                    var priorityMap = ops.getMap(ops.getMap(t).result().get().get(string));
+                    if (priorityMap.result().isEmpty())
+                        return false;
+                    boolean bl = hasNewValue(keys[0], ops, priorityMap.result().get(), "");
+                    keys[0] = getValues(ops, priorityMap.result().get(), "");
+                    return bl;
+                }).allMatch(provider -> ops.getMap(((DynamicMetadataProvider<T>)provider).getInput()).result().get().get(priority.getSerializedName()) == null))
+                    continue;
                 map.putAll(input.stream().filter(provider -> provider instanceof DynamicMetadataProvider<?>).map(provider -> {
                     DynamicMetadataProvider<T> newProvider = ((DynamicMetadataProvider<?>) provider).convert(ops);
                     return newProvider.getInput();
-                }).collect(Collectors.toMap(t -> string, t -> ops.getMap(t).result().get().get(string))));
+                }).collect(Collector.of(
+                        () -> new HashMap<T, T>(),
+                        (hashMap, object) -> {
+                            T value = ops.getMap(object).getOrThrow(false, s -> SpawnLib.LOGGER.error("Failed to encode metadata providers for {}. {}", ops.getStringValue(string), s)).get(priority.getSerializedName());
+                            if (value == null)
+                                return;
+                            hashMap.put(string, value);
+                        },
+                        (map1, map2) -> {
+                            map1.putAll(map2);
+                            return map1;
+                        },
+                        hashMap -> hashMap
+                )));
             } catch (Exception ex) {
                 SpawnLib.LOGGER.warn("Could not encode metadata providers for priority {}. {}", priority.getSerializedName(), ex.toString());
             }
         }
-        return DataResult.success(ops.createMap(map));
+        return ops.mergeToMap(prefix, map);
+    }
+
+    private static <T> List<String> getValues(DynamicOps<T> ops, MapLike<T> input, String prefix) {
+        List<String> list = new ArrayList<>();
+        for (Pair<T, T> entry : input.entries().toList()) {
+            var key = ops.getStringValue(entry.getFirst());
+            if (key.result().isEmpty() || key.result().get().equals("value"))
+                continue;
+            list.add(prefix + key.result().get());
+            if (ops.getMap(entry.getSecond()).result().isEmpty())
+                continue;
+            list.addAll(getValues(ops, ops.getMap(entry.getSecond()).result().get(), prefix + key.result().get() + "."));
+        }
+        return list;
+    }
+
+    private static <T> boolean hasNewValue(List<String> baseMapValues, DynamicOps<T> ops, MapLike<T> input, String prefix) {
+        for (Pair<T, T> entry : input.entries().toList()) {
+            var key = ops.getStringValue(entry.getFirst());
+            if (key.result().isEmpty() || key.result().get().equals("value"))
+                continue;
+            if (baseMapValues.contains(prefix + key.result().get()))
+                return true;
+            if (ops.getMap(entry.getSecond()).result().isEmpty())
+                continue;
+            boolean bl = hasNewValue(baseMapValues, ops, ops.getMap(entry.getSecond()).result().get(), prefix + key.result().get() + ".");
+            if (bl)
+                return true;
+        }
+        return false;
     }
 }
