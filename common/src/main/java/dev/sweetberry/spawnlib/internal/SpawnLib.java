@@ -21,6 +21,7 @@ public class SpawnLib {
         LOGGER.info("SpawnLib is initializing. Platform: {}", helper.getPlatform().name);
 
         SpawnLibRegistries.init();
+
     }
 
     public static PlatformHelper getHelper() {

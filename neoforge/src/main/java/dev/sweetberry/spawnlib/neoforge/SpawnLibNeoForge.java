@@ -5,7 +5,8 @@ import dev.sweetberry.spawnlib.api.SpawnLibRegistryKeys;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.SpawnLibCommands;
-import dev.sweetberry.spawnlib.internal.attachment.ModifiedSpawnsAttachment;
+import dev.sweetberry.spawnlib.internal.attachment.PlayerSpawnsAttachment;
+import dev.sweetberry.spawnlib.internal.attachment.WorldSpawnAttachment;
 import dev.sweetberry.spawnlib.internal.registry.RegistrationCallback;
 import dev.sweetberry.spawnlib.internal.registry.SpawnLibRegistries;
 import dev.sweetberry.spawnlib.internal.registry.SpawnModificationCodecs;
@@ -25,9 +26,12 @@ import java.util.function.Consumer;
 
 @Mod(SpawnLib.MODID)
 public class SpawnLibNeoForge {
-    public static final AttachmentType<ModifiedSpawnsAttachment> MODIFIED_SPAWNS_ATTACHMENT = AttachmentType.builder(ModifiedSpawnsAttachment::new)
-            .serialize(ModifiedSpawnsAttachment.CODEC)
+    public static final AttachmentType<PlayerSpawnsAttachment> PLAYER_ATTACHMENT = AttachmentType.builder(PlayerSpawnsAttachment::new)
+            .serialize(PlayerSpawnsAttachment.CODEC)
             .copyOnDeath()
+            .build();
+    public static final AttachmentType<WorldSpawnAttachment> WORLD_ATTACHMENT = AttachmentType.builder(WorldSpawnAttachment::new)
+            .serialize(WorldSpawnAttachment.CODEC)
             .build();
 
     public SpawnLibNeoForge(IEventBus bus) {
@@ -50,12 +54,12 @@ public class SpawnLibNeoForge {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
             if (event.getRegistryKey() == NeoForgeRegistries.Keys.ATTACHMENT_TYPES) {
-                event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, ModifiedSpawnsAttachment.ID, () -> MODIFIED_SPAWNS_ATTACHMENT);
-            } else if (event.getRegistryKey() == SpawnLibRegistryKeys.METADATA_TYPE) {
+                event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, PlayerSpawnsAttachment.ID, () -> PLAYER_ATTACHMENT);
+                event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, WorldSpawnAttachment.ID, () -> WORLD_ATTACHMENT);
+            } else if (event.getRegistryKey() == SpawnLibRegistryKeys.METADATA_TYPE)
                 register(event, SpawnLibMetadataTypes::registerAll);
-            } else if (event.getRegistryKey() == SpawnLibRegistryKeys.SPAWN_MODIFICATION_CODEC) {
+            if (event.getRegistryKey() == SpawnLibRegistryKeys.SPAWN_MODIFICATION_CODEC)
                 register(event, SpawnModificationCodecs::registerAll);
-            }
         }
 
         private static <T> void register(RegisterEvent event, Consumer<RegistrationCallback<T>> consumer) {

@@ -5,7 +5,8 @@ import dev.sweetberry.spawnlib.api.SpawnLibRegistryKeys;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.SpawnLibCommands;
-import dev.sweetberry.spawnlib.internal.attachment.ModifiedSpawnsAttachment;
+import dev.sweetberry.spawnlib.internal.attachment.PlayerSpawnsAttachment;
+import dev.sweetberry.spawnlib.internal.attachment.WorldSpawnAttachment;
 import dev.sweetberry.spawnlib.internal.registry.SpawnModificationCodecs;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -19,11 +20,15 @@ import net.minecraft.server.MinecraftServer;
 
 public class SpawnLibFabric implements ModInitializer {
 
-    public static final AttachmentType<ModifiedSpawnsAttachment> MODIFIED_SPAWNS_ATTACHMENT = AttachmentRegistry.<ModifiedSpawnsAttachment>builder()
-            .persistent(ModifiedSpawnsAttachment.CODEC)
-            .initializer(ModifiedSpawnsAttachment::new)
+    public static final AttachmentType<PlayerSpawnsAttachment> PLAYER_ATTACHMENT = AttachmentRegistry.<PlayerSpawnsAttachment>builder()
+            .persistent(PlayerSpawnsAttachment.CODEC)
+            .initializer(PlayerSpawnsAttachment::new)
             .copyOnDeath()
-            .buildAndRegister(ModifiedSpawnsAttachment.ID);
+            .buildAndRegister(PlayerSpawnsAttachment.ID);
+    public static final AttachmentType<WorldSpawnAttachment> WORLD_ATTACHMENT = AttachmentRegistry.<WorldSpawnAttachment>builder()
+            .persistent(WorldSpawnAttachment.CODEC)
+            .initializer(WorldSpawnAttachment::new)
+            .buildAndRegister(WorldSpawnAttachment.ID);
 
     private static MinecraftServer server;
 

@@ -12,4 +12,6 @@ public class SpawnLibRegistryKeys {
 
     public static final ResourceKey<Registry<Codec<? extends SpawnModification>>> SPAWN_MODIFICATION_CODEC = ResourceKey.createRegistryKey(SpawnLib.id("spawn_modification_codec"));
     public static final ResourceKey<Registry<MetadataType<?>>> METADATA_TYPE = ResourceKey.createRegistryKey(SpawnLib.id("metadata_type"));
+
+    public static final ResourceKey<ModifiedSpawn> DEFAULT_SPAWN = ResourceKey.create(SPAWN, SpawnLib.id("default"));
 }
