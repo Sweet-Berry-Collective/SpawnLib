@@ -72,8 +72,8 @@ public class ModifiedSpawnsAttachment {
 
         Map<String, CompoundTag> metadataTags = new HashMap<>();
         for (var metadata : spawn.value().getMetadata()) {
-            String[] innerKeys = metadata.getKey().split("\\$");
-            String prefix = metadata.getKey().split("\\$", 1)[0];
+            String[] innerKeys = metadata.getKey().split("\\.");
+            String prefix = metadata.getKey().split("\\.", 1)[0];
             metadataTags.put(prefix, createInnerKeyNbt(getPreviousNbt(metadataTags, prefix), metadata, prefix, innerKeys, metadataTags, priority));
         }
         metadataTags.values().forEach(tag -> providers.add(new DynamicMetadataProvider<>(NbtOps.INSTANCE, tag)));

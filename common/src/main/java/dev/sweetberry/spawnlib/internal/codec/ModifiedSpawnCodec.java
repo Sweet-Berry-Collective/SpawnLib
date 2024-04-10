@@ -36,8 +36,8 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
                 }
                 Metadata<?> individualMetadata = metadataResult.result().get().getFirst();
                 String key = ops.getStringValue(values.get(i).getFirst()).getOrThrow(false, s -> {});
-                if (key.contains("$")) {
-                    return DataResult.error(() -> "Metadata is not allowed to utilise '$' as it is reserved for built-in metadata.");
+                if (key.contains(".")) {
+                    return DataResult.error(() -> "Metadata is not allowed to utilise '.' as it is reserved for built-in metadata.");
                 }
                 individualMetadata.setKey(key);
                 unused.add((Metadata<Object>)individualMetadata);
@@ -67,7 +67,7 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
 
     private static void handleInnerBuiltInMetadata(SpawnModification modification, List<Metadata<Object>> metadata, String prefix) {
         Map<SpawnModification, Integer> indexMap = new HashMap<>();
-        String id = prefix + modification.getId() + "$" + indexMap.getOrDefault(modification, 0);
+        String id = prefix + modification.getId() + "." + indexMap.getOrDefault(modification, 0);
         if (!modification.getBuiltInMetadata().isEmpty()) {
             modification.getBuiltInMetadata().forEach(md -> {
                 metadata.add((Metadata<Object>) modification.getBuiltInMetadata().stream().filter(md1 -> md1.getKey() == md.getKey()).findAny().get());
