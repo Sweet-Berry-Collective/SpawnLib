@@ -32,12 +32,11 @@ public class DynamicMetadataProvider<TOps> implements MetadataProvider {
             return Optional.empty();
         Optional<T> value = Optional.empty();
         var baseMap = ops.getMap(input).getOrThrow(false, s -> {});
-        var priorityMap = ops.getMap(baseMap.get(priority.getSerializedName())).getOrThrow(false, s -> {});
-        var base = priorityMap.get("metadata");
-        if (base == null)
+        var priorityMap = ops.getMap(baseMap.get(priority.getSerializedName()));
+        if (priorityMap.result().isEmpty())
             return Optional.empty();
         // FIXME: Fix scoped values not working.
-        for (var innerEntry : ops.getMap(base).getOrThrow(false, s -> {}).entries().toList()) {
+        for (var innerEntry : priorityMap.result().get().entries().toList()) {
             String idToCheck = ops.getStringValue(innerEntry.getFirst()).getOrThrow(false, s -> {});
             if (idToCheck.equals(id)) {
                 MapLike<TOps> mapLike = ops.getMap(innerEntry.getSecond()).getOrThrow(false, s -> {});

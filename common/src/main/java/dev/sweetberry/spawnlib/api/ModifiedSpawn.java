@@ -19,7 +19,7 @@ public class ModifiedSpawn {
     private final List<SpawnModification> modifications;
 
     public static final Codec<ModifiedSpawn> DIRECT_CODEC = new ModifiedSpawnCodec();
-    public static final Codec<Holder<ModifiedSpawn>> CODEC = RegistryFileCodec.create(SpawnLibRegistryKeys.SPAWN, DIRECT_CODEC, false);
+    public static final Codec<Holder<ModifiedSpawn>> CODEC = RegistryFileCodec.create(SpawnLibRegistryKeys.SPAWN, DIRECT_CODEC);
 
     @Nullable
     List<String> unusedMetadata;

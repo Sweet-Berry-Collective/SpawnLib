@@ -61,21 +61,16 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
         MapLike<T> mapLikeValue = ops.getMap(mapValue).getOrThrow(false, SpawnLib.LOGGER::error);
         T value = handleInnerMetadata(ops, mapValue, mapLikeValue);
 
-        Map<T, T> newMap = new HashMap<>();
-        newMap.put(ops.createString("metadata"), value);
-        newMap.put(ops.createString("spawn"), baseMapLike.get("spawn"));
-        metadataSet.add(ops.createMap(Map.of(ops.createString(priority.getSerializedName()), ops.createMap(newMap))));
+        metadataSet.add(ops.createMap(Map.of(ops.createString(priority.getSerializedName()), value)));
     }
 
     private static <T> T handleInnerMetadata(DynamicOps<T> ops, T existingMap, MapLike<T> mapLike) {
         for (Pair<T, T> entries : mapLike.entries().toList()) {
             T stringEntry = entries.getFirst();
-            String id = ops.getStringValue(stringEntry).getOrThrow(false, SpawnLib.LOGGER::error);
             Map<T, T> innerMap = new HashMap<>();
             DataResult<MapLike<T>> entryMapLike = ops.getMap(mapLike.get(stringEntry));
             if (entryMapLike.result().isEmpty())
                 return existingMap;
-            innerMap.put(ops.createString("type"), entryMapLike.result().get().get("type"));
             innerMap.put(ops.createString("value"), entryMapLike.result().get().get("value"));
             ops.mergeToMap(existingMap, stringEntry, ops.createMap(innerMap));
             DataResult<MapLike<T>> newMapLike = ops.getMap(mapLike.get(stringEntry));

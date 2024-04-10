@@ -7,10 +7,12 @@ import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.codec.MetadataProviderCodec;
 import dev.sweetberry.spawnlib.internal.duck.Duck_MinecraftServer;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.Services;
 import net.minecraft.server.WorldStem;
@@ -32,16 +34,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(MinecraftServer.class)
 public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
     @Shadow @Final protected LevelStorageSource.LevelStorageAccess storageSource;
+
+    @Shadow public abstract RegistryAccess.Frozen registryAccess();
+
     @Unique
     private Holder<ModifiedSpawn> spawnlib$globalSpawn;
 
     @Unique
-    private List<MetadataProvider> spawnlib$metadataProviders;
+    private List<MetadataProvider> spawnlib$metadataProviders = new ArrayList<>();
 
 
     @Override
@@ -79,8 +85,10 @@ public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
                     ),
                     NbtAccounter.unlimitedHeap()
             );
-            spawnlib$globalSpawn = ModifiedSpawn.CODEC.decode(NbtOps.INSTANCE, tag.getCompound("spawn")).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Could not resolve global spawn from spawnlib.dat")).getFirst();
-            spawnlib$metadataProviders = MetadataProviderCodec.SERVER_INSTANCE.decode(NbtOps.INSTANCE, tag.getCompound("spawn")).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Could not resolve global spawn metadata from spawnlib.dat")).getFirst();
+            if (tag.contains("spawn"))
+                spawnlib$globalSpawn = ModifiedSpawn.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, this.registryAccess()), tag.getCompound("spawn")).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Could not resolve global spawn from spawnlib.dat")).getFirst();
+            if (tag.contains("metadata"))
+                spawnlib$metadataProviders = MetadataProviderCodec.SERVER_INSTANCE.decode(RegistryOps.create(NbtOps.INSTANCE, this.registryAccess()), tag.getCompound("metadata")).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Could not resolve global spawn metadata from spawnlib.dat")).getFirst();
         } catch (Exception ignored) {}
     }
 
@@ -96,8 +104,10 @@ public abstract class Mixin_MinecraftServer implements Duck_MinecraftServer {
         try {
             file.createNewFile();
             var tag = new CompoundTag();
-            tag.put("spawn", ModifiedSpawn.CODEC.encodeStart(NbtOps.INSTANCE, spawnlib$globalSpawn).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Failed to encode global spawn to spawnlib.dat")));
-            tag.put("metadata", MetadataProviderCodec.SERVER_INSTANCE.encodeStart(NbtOps.INSTANCE, spawnlib$metadataProviders).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Failed to encode global spawn metadata to spawnlib.dat")));
+            if (spawnlib$globalSpawn != null)
+                tag.put("spawn", ModifiedSpawn.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, this.registryAccess()), spawnlib$globalSpawn).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Failed to encode global spawn to spawnlib.dat")));
+            if (spawnlib$metadataProviders != null && !spawnlib$metadataProviders.isEmpty())
+                tag.put("metadata", MetadataProviderCodec.SERVER_INSTANCE.encodeStart(RegistryOps.create(NbtOps.INSTANCE, this.registryAccess()), spawnlib$metadataProviders).getOrThrow(false, (s) -> SpawnLib.LOGGER.error("Failed to encode global spawn metadata to spawnlib.dat")));
             tag.write(
                     new DataOutputStream(
                             new FileOutputStream(file)
