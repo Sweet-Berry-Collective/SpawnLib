@@ -86,7 +86,7 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
         Map<T, T> map = new HashMap<>();
         for (SpawnPriority priority : priorities) {
             try {
-                final List<String>[] keys = new List[]{new ArrayList<>()};
+                final HashSet<String>[] keys = new HashSet[]{new HashSet<>()};
                 T string = ops.createString(priority.getSerializedName());
                 if (input.stream().filter(provider -> {
                     if (!(provider instanceof DynamicMetadataProvider<?> dynamic))
@@ -99,7 +99,8 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
                     if (priorityMap.result().isEmpty())
                         return false;
                     boolean bl = hasNewValue(keys[0], ops, priorityMap.result().get(), "");
-                    keys[0] = getValues(ops, priorityMap.result().get(), "");
+                    if (bl)
+                        keys[0].addAll(getValues(ops, priorityMap.result().get(), ""));
                     return bl;
                 }).allMatch(provider -> ops.getMap(((DynamicMetadataProvider<T>)provider).getInput()).result().get().get(priority.getSerializedName()) == null))
                     continue;
@@ -141,12 +142,12 @@ public class MetadataProviderCodec implements Codec<List<MetadataProvider>> {
         return list;
     }
 
-    private static <T> boolean hasNewValue(List<String> baseMapValues, DynamicOps<T> ops, MapLike<T> input, String prefix) {
+    private static <T> boolean hasNewValue(HashSet<String> baseMapValues, DynamicOps<T> ops, MapLike<T> input, String prefix) {
         for (Pair<T, T> entry : input.entries().toList()) {
             var key = ops.getStringValue(entry.getFirst());
             if (key.result().isEmpty() || key.result().get().equals("value"))
                 continue;
-            if (baseMapValues.contains(prefix + key.result().get()))
+            if (!baseMapValues.contains(prefix + key.result().get()))
                 return true;
             if (ops.getMap(entry.getSecond()).result().isEmpty())
                 continue;
