@@ -1,7 +1,6 @@
 package dev.sweetberry.spawnlib.api;
 
 import dev.sweetberry.spawnlib.internal.SpawnLib;
-import dev.sweetberry.spawnlib.internal.duck.Duck_MinecraftServer;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -10,51 +9,50 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 public class SpawnExtensions {
-    public static ModifiedSpawn getGlobalSpawn(MinecraftServer server) {
-        return ((Duck_MinecraftServer)server).spawnlib$getGlobalSpawn().value();
+    @Nullable
+    public static Holder<ModifiedSpawn> getGlobalSpawn(MinecraftServer server) {
+        return SpawnLib.getHelper().getAttachment(server).getSpawn();
     }
 
     public static void setGlobalSpawn(MinecraftServer server, Holder<ModifiedSpawn> spawn) {
-        ((Duck_MinecraftServer)server).spawnlib$setGlobalSpawn(spawn, new CompoundTag());
+        setGlobalSpawn(server, spawn, new CompoundTag());
     }
 
     public static void setGlobalSpawn(MinecraftServer server, Holder<ModifiedSpawn> spawn, @Nullable Tag metadata) {
-        ((Duck_MinecraftServer)server).spawnlib$setGlobalSpawn(spawn, metadata);
+        SpawnLib.getHelper().getAttachment(server).setSpawn(spawn, metadata);
     }
 
     @Nullable
-    public static ModifiedSpawn getGlobalSpawn(ServerPlayer player) {
+    public static Holder<ModifiedSpawn> getGlobalSpawn(ServerPlayer player) {
         return SpawnLib.getHelper().getAttachment(player).getGlobalSpawn();
     }
 
     public static void setGlobalSpawn(ServerPlayer player, Holder<ModifiedSpawn> spawn) {
-        setGlobalSpawn(player, spawn, null);
+        setGlobalSpawn(player, spawn, new CompoundTag());
     }
 
     public static void setGlobalSpawn(ServerPlayer player, Holder<ModifiedSpawn> spawn, @Nullable Tag metadata) {
-        SpawnLib.getHelper().getAttachment(player).setGlobalSpawn(spawn);
-        SpawnLib.getHelper().getAttachment(player).createMetadataProviders(spawn, SpawnPriority.GLOBAL_PLAYER, metadata);
+        SpawnLib.getHelper().getAttachment(player).setGlobalSpawn(spawn, metadata);
     }
 
-    public static void clearGlobalSpawn(ServerPlayer player) {
-        SpawnLib.getHelper().getAttachment(player).clearGlobalSpawn();
+    public static boolean clearGlobalSpawn(ServerPlayer player) {
+        return SpawnLib.getHelper().getAttachment(player).clearGlobalSpawn();
     }
 
     @Nullable
-    public static ModifiedSpawn getLocalSpawn(ServerPlayer player) {
+    public static Holder<ModifiedSpawn> getLocalSpawn(ServerPlayer player) {
         return SpawnLib.getHelper().getAttachment(player).getLocalSpawn();
     }
 
     public static void setLocalSpawn(ServerPlayer player, Holder<ModifiedSpawn> spawn) {
-        setLocalSpawn(player, spawn, null);
+        setLocalSpawn(player, spawn, new CompoundTag());
     }
 
     public static void setLocalSpawn(ServerPlayer player, Holder<ModifiedSpawn> spawn, @Nullable Tag metadata) {
-        SpawnLib.getHelper().getAttachment(player).setLocalSpawn(spawn);
-        SpawnLib.getHelper().getAttachment(player).createMetadataProviders(spawn, SpawnPriority.LOCAL_PLAYER, metadata);
+        SpawnLib.getHelper().getAttachment(player).setLocalSpawn(spawn, metadata);
     }
 
-    public static void clearLocalSpawn(ServerPlayer player) {
-        SpawnLib.getHelper().getAttachment(player).clearLocalSpawn();
+    public static boolean clearLocalSpawn(ServerPlayer player) {
+        return SpawnLib.getHelper().getAttachment(player).clearLocalSpawn();
     }
 }

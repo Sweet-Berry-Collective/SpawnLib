@@ -40,12 +40,11 @@ public class Field<T> {
             for (int i = providers.size() - 1; i >= 0; --i) {
                 String scope = null;
                 String id = metadataKey;
-                if (id.contains("$")) {
-                    String[] params = id.split("\\$", 1);
+                if (id.contains(".")) {
+                    String[] params = id.split("\\.", 1);
                     scope = params[0];
-                    id = params[1];
                 }
-                var value = providers.get(i).getData(context.getPriority(), scope, id, metadataType);
+                var value = providers.get(i).getData(context.getPriority(), scope, metadataKey, metadataType);
                 if (value.isPresent())
                     return value.get();
             }

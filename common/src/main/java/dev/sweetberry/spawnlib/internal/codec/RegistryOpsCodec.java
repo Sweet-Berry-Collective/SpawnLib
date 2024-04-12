@@ -19,14 +19,14 @@ public class RegistryOpsCodec<T> implements Codec<T> {
     }
 
     @Override
-    public <T1> DataResult<Pair<T, T1>> decode(DynamicOps<T1> ops, T1 input) {
-        RegistryOps<T1> registryOps = RegistryOps.create(ops, SpawnLib.getHelper().getServer().registryAccess());
+    public <TOps> DataResult<Pair<T, TOps>> decode(DynamicOps<TOps> ops, TOps input) {
+        RegistryOps<TOps> registryOps = RegistryOps.create(ops, SpawnLib.getHelper().getServer().registryAccess());
         return codec.decode(registryOps, input);
     }
 
     @Override
-    public <T1> DataResult<T1> encode(T input, DynamicOps<T1> ops, T1 prefix) {
-        RegistryOps<T1> registryOps = RegistryOps.create(ops, SpawnLib.getHelper().getServer().registryAccess());
+    public <TOps> DataResult<TOps> encode(T input, DynamicOps<TOps> ops, TOps prefix) {
+        RegistryOps<TOps> registryOps = RegistryOps.create(ops, SpawnLib.getHelper().getServer().registryAccess());
         return codec.encode(input, registryOps, prefix);
     }
 }

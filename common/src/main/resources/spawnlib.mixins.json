@@ -7,7 +7,6 @@
   "mixins": [
     "Accessor_Entity",
     "Accessor_LevelStorageAccess",
-    "Mixin_MinecraftServer",
     "Mixin_PlayerList"
   ],
   "client": [],

@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 
 public class NeverSpawnModification implements SpawnModification {
-    public static ResourceLocation ID = SpawnLib.id("never");
+    public static final ResourceLocation ID = SpawnLib.id("never");
 
     public static final Codec<NeverSpawnModification> CODEC = Codec.unit(NeverSpawnModification::new);
 

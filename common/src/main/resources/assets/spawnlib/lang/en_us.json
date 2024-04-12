@@ -1,0 +1,15 @@
+{
+  "commands.spawnlib.set.success.world": "Set world spawn to %s.",
+  "commands.spawnlib.set.success.multiple": "Set %s spawn to %s for %s players.",
+  "commands.spawnlib.set.success.single": "Set %s spawn to %s for %s.",
+
+  "commands.spawnlib.get.success.world": "The current world spawn is %s.",
+  "commands.spawnlib.get.fail.world": "The current world does not have a spawn.",
+  "commands.spawnlib.get.success.player": "The current %s spawn for %s is %s.",
+  "commands.spawnlib.get.fail.player": "%s does not have a %s spawn.",
+
+  "commands.spawnlib.clear.fail.single": "%s does not have a %s spawn.",
+  "commands.spawnlib.clear.fail.multiple": "All of the specified players do not have a %s spawn.",
+  "commands.spawnlib.clear.success.single": "Cleared %s spawn for player %s.",
+  "commands.spawnlib.clear.success.multiple": "Cleared %s spawn for %s players."
+}

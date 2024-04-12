@@ -2,6 +2,7 @@ package dev.sweetberry.spawnlib.api;
 
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import dev.sweetberry.spawnlib.internal.mixin.Accessor_Entity;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -44,10 +45,10 @@ public class SpawnContext {
         var providers = SpawnLib.getHelper().getAttachment(player).getProviders();
         var context = new SpawnContext(player);
 
-        ModifiedSpawn spawn = SpawnExtensions.getLocalSpawn(player);
-        if (spawn != null) {
+        Holder<ModifiedSpawn> spawn = SpawnExtensions.getLocalSpawn(player);
+        if (spawn != null && spawn.isBound()) {
             context.priority = SpawnPriority.LOCAL_PLAYER;
-            if (spawn.modify(context, providers))
+            if (spawn.value().modify(context, providers))
                 return context;
             context.obstructed = true;
             SpawnExtensions.clearLocalSpawn(player);
@@ -56,13 +57,13 @@ public class SpawnContext {
         context.reset();
         spawn = SpawnExtensions.getGlobalSpawn(player);
         context.priority = SpawnPriority.GLOBAL_PLAYER;
-        if (spawn != null && spawn.modify(context, providers))
+        if (spawn != null && spawn.isBound() && spawn.value().modify(context, providers))
             return context;
 
         context.reset();
         spawn = SpawnExtensions.getGlobalSpawn(player.getServer());
         context.priority = SpawnPriority.GLOBAL_WORLD;
-        if (spawn != null && spawn.modify(context, providers)) {
+        if (spawn != null && spawn.isBound() && spawn.value().modify(context, providers)) {
             return context;
         }
         return null;

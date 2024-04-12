@@ -60,7 +60,7 @@ public class RestrictToBlockSpawnModification implements SpawnModification {
     }
 
     public int getRequiredAmount(SpawnContext context, List<MetadataProvider> providers) {
-        return this.amount.map(field -> field.get(context, providers)).orElse(bounds.get(context, providers).getLength().getX() + bounds.get(context, providers).getLength().getY() + bounds.get(context, providers).getLength().getZ());
+        return this.amount.map(field -> field.get(context, providers)).orElse(bounds.get(context, providers).getXSpan() * bounds.get(context, providers).getYSpan() * bounds.get(context, providers).getZSpan());
     }
 
     public boolean isInverted(SpawnContext context, List<MetadataProvider> providers) {

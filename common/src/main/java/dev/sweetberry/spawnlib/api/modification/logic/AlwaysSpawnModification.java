@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 
 public class AlwaysSpawnModification implements SpawnModification {
-    public static ResourceLocation ID = SpawnLib.id("always");
+    public static final ResourceLocation ID = SpawnLib.id("always");
 
     public static final Codec<AlwaysSpawnModification> CODEC = Codec.unit(AlwaysSpawnModification::new);
 

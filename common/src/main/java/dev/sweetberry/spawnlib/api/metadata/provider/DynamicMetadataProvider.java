@@ -32,19 +32,32 @@ public class DynamicMetadataProvider<TOps> implements MetadataProvider {
             return Optional.empty();
         Optional<T> value = Optional.empty();
         var baseMap = ops.getMap(input).getOrThrow(false, s -> {});
-        var priorityMap = ops.getMap(baseMap.get(priority.getSerializedName())).getOrThrow(false, s -> {});
-        var base = priorityMap.get("metadata");
-        if (base == null)
+        var priorityMap = ops.getMap(baseMap.get(priority.getSerializedName()));
+        if (priorityMap.result().isEmpty())
             return Optional.empty();
-        // FIXME: Fix scoped values not working.
-        for (var innerEntry : ops.getMap(base).getOrThrow(false, s -> {}).entries().toList()) {
-            String idToCheck = ops.getStringValue(innerEntry.getFirst()).getOrThrow(false, s -> {});
-            if (idToCheck.equals(id)) {
-                MapLike<TOps> mapLike = ops.getMap(innerEntry.getSecond()).getOrThrow(false, s -> {});
-                value = metadataType.codec().decode(ops, mapLike.get("value")).result().map(Pair::getFirst);
-            }
+        for (var innerEntry : priorityMap.result().get().entries().toList()) {
+            // TODO: Test if inner data works.
+            getInnerData(innerEntry, id, metadataType);
         }
         return value;
+    }
+
+    private <T> Optional<T> getInnerData(Pair<TOps, TOps> entry, String id, MetadataType<T> metadataType) {
+        String[] splitId = id.split("\\.");
+        String idToCheck = ops.getStringValue(entry.getFirst()).getOrThrow(false, s -> {});
+        if (splitId.length == 1 && idToCheck.equals(id)) {
+            MapLike<TOps> mapLike = ops.getMap(entry.getSecond()).getOrThrow(false, s -> {});
+            return metadataType.codec().decode(ops, mapLike.get("value")).result().map(Pair::getFirst);
+        }
+        var innerMap = ops.getMap(entry.getSecond());
+        if (innerMap.result().isEmpty())
+            return Optional.empty();
+        for (Pair<TOps, TOps> innerEntry : innerMap.result().get().entries().toList()) {
+            Optional<T> innerData = getInnerData(innerEntry, id.split("\\.", 1)[1], metadataType);
+            if (innerData.isPresent())
+                return innerData;
+        }
+        return Optional.empty();
     }
 
     public TOps getInput() {
