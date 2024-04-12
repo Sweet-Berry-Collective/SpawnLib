@@ -12,6 +12,7 @@ import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -31,6 +32,8 @@ public class SpawnLibMetadataTypes {
     public static final MetadataType<HolderSet<Block>> BLOCKS = holderSet(Registries.BLOCK, BuiltInRegistries.BLOCK.holderByNameCodec(), BuiltInRegistries.BLOCK.byNameCodec());
     public static final MetadataType<HolderSet<Fluid>> FLUIDS = holderSet(Registries.FLUID, BuiltInRegistries.FLUID.holderByNameCodec(), BuiltInRegistries.FLUID.byNameCodec());
     public static final MetadataType<Heightmap.Types> HEIGHTMAP_TYPE = new MetadataType<>(Heightmap.Types.class, Heightmap.Types.CODEC);
+
+    public static final MetadataType<GameType> GAME_TYPE = new MetadataType<>(GameType.class, SpawnLibCodecs.GAME_TYPE);
 
     public static <T> MetadataType<HolderSet<T>> holderSet(ResourceKey<? extends Registry<T>> resourceKey, Codec<Holder<T>> holderCodec, Codec<T> codec) {
         return new MetadataType<>(castClass(HolderSet.class), SpawnLibCodecs.listOrSingularHolderSet(RegistryCodecs.homogeneousList(resourceKey, codec), holderCodec));

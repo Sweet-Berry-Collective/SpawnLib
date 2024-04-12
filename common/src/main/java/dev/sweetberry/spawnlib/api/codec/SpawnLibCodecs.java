@@ -8,6 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 
 public class SpawnLibCodecs {
@@ -24,6 +25,8 @@ public class SpawnLibCodecs {
             return Either.left(vec3);
         return Either.right(vec3);
     });
+
+    public static final Codec<GameType> GAME_TYPE = StringRepresentable.fromValues(GameType::values);
 
     public static <T> Codec<HolderSet<T>> listOrSingularHolderSet(Codec<HolderSet<T>> holderSetCodec, Codec<Holder<T>> holderCodec) {
         return Codec

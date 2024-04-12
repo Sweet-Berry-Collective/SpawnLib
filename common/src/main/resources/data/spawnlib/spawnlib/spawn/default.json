@@ -1,6 +1,45 @@
 {
   "functions": [
     {
+      "type": "spawnlib:in_dimension",
+      "dimension": "minecraft:overworld"
+    },
+    {
+      "type": "spawnlib:world_spawn"
+    },
+    {
+      "type": "spawnlib:snap_to_center"
+    },
+    {
+      "type": "spawnlib:find_ground"
+    },
+    {
+      "type": "spawnlib:if_failure",
+      "condition": {
+        "type": "spawnlib:is_gamemode",
+        "gamemode": "adventure"
+      },
+      "functions": [
+        {
+          "type": "spawnlib:try_until_safe",
+          "functions": [
+            {
+              "type": "spawnlib:world_spawn"
+            },
+            {
+              "type": "spawnlib:random_offset"
+            },
+            {
+              "type": "spawnlib:snap_to_center"
+            },
+            {
+              "type": "spawnlib:find_ground"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "type": "spawnlib:always"
     }
   ]

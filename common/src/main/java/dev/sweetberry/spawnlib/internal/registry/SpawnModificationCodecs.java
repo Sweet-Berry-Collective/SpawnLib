@@ -33,6 +33,8 @@ public class SpawnModificationCodecs {
         register(callback, OrSpawnModification.ID, OrSpawnModification.CODEC);
         register(callback, XorSpawnModification.ID, XorSpawnModification.CODEC);
         register(callback, WorldSpawnModification.ID, WorldSpawnModification.CODEC);
+        register(callback, IsGamemodeSpawnModification.ID, IsGamemodeSpawnModification.CODEC);
+        register(callback, SnapToCenterSpawnModification.ID, SnapToCenterSpawnModification.CODEC);
     }
 
     public static void register(RegistrationCallback<Codec<? extends SpawnModification>> callback, ResourceLocation id, Codec<? extends SpawnModification> codec) {
