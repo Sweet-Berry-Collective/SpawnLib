@@ -43,20 +43,13 @@ public class TryUntilSafeSpawnModification implements SpawnModification {
 
     @Override
     public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
-        ServerPlayer player = context.getPlayer();
-        SpawnContext copiedContext = new SpawnContext(player);
-
-        outer: for (int i = 0; i < getMaxIterations(context, providers); ++i) {
-            copiedContext.copy(context);
+        for (int i = 0; i < getMaxIterations(context, providers); ++i) {
             for (SpawnModification modification : functions)
-                if (!modification.modify(copiedContext, providers))
-                    continue outer;
+                modification.modify(context, providers);
 
-            Vec3 spawnPos = copiedContext.getSpawnPos().subtract(0, 1, 0);
-            if (isValidForSpawningIgnoreFluids(copiedContext, copiedContext.getLevel(), copiedContext.getSpawnPos()) && (!isValidForSpawningIgnoreFluids(copiedContext, copiedContext.getLevel(), spawnPos) || !copiedContext.getLevel().getFluidState(BlockPos.containing(spawnPos)).is(Fluids.EMPTY))) {
-                context.copy(copiedContext);
+            Vec3 spawnPos = context.getSpawnPos().subtract(0, 1, 0);
+            if (isValidForSpawningIgnoreFluids(context, context.getLevel(), context.getSpawnPos()) && (!isValidForSpawningIgnoreFluids(context, context.getLevel(), spawnPos) || !context.getLevel().getFluidState(BlockPos.containing(spawnPos)).is(Fluids.EMPTY)))
                 return true;
-            }
         }
 
         return false;

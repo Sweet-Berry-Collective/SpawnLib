@@ -1,18 +1,7 @@
 package dev.sweetberry.spawnlib.internal.registry;
 
 import com.mojang.serialization.Codec;
-import dev.sweetberry.spawnlib.api.modification.DimensionSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.FindGroundSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.HeightmapTypeSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.InBoundsSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.OffsetPositionSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.RandomOffsetSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.RestrictToBlockSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.RestrictToFluidSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.SeaLevelSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.SetPositionSpawnModification;
-import dev.sweetberry.spawnlib.api.modification.SpawnModification;
-import dev.sweetberry.spawnlib.api.modification.TryUntilSafeSpawnModification;
+import dev.sweetberry.spawnlib.api.modification.*;
 import dev.sweetberry.spawnlib.api.modification.logic.*;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.core.Registry;
@@ -43,6 +32,7 @@ public class SpawnModificationCodecs {
         register(callback, AndSpawnModification.ID, AndSpawnModification.CODEC);
         register(callback, OrSpawnModification.ID, OrSpawnModification.CODEC);
         register(callback, XorSpawnModification.ID, XorSpawnModification.CODEC);
+        register(callback, WorldSpawnModification.ID, WorldSpawnModification.CODEC);
     }
 
     public static void register(RegistrationCallback<Codec<? extends SpawnModification>> callback, ResourceLocation id, Codec<? extends SpawnModification> codec) {
