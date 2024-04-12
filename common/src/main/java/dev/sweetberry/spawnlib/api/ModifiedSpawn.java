@@ -45,10 +45,10 @@ public class ModifiedSpawn {
     }
 
     public boolean modify(SpawnContext context, List<MetadataProvider> metadataProviders) {
+        boolean last = false;
         for (SpawnModification modification : this.modifications)
-            if (!modification.modify(context, metadataProviders))
-                return false;
-        return true;
+            last = modification.modify(context, metadataProviders);
+        return last;
     }
 
     @ApiStatus.Internal

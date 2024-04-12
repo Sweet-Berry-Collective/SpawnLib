@@ -15,6 +15,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.NbtTagArgument;
 import net.minecraft.commands.arguments.ResourceKeyArgument;
+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
