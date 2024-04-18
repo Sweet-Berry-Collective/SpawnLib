@@ -3,8 +3,8 @@ package dev.sweetberry.spawnlib.api.modification;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
+import dev.sweetberry.spawnlib.api.codec.FieldCodec;
 import dev.sweetberry.spawnlib.api.codec.SpawnLibCodecs;
-import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
@@ -26,11 +26,11 @@ public class RestrictToFluidSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("restrict_to_fluid");
 
     public static final Codec<RestrictToFluidSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.FLUIDS).fieldOf("fluids").forGetter(modification -> modification.fluids),
-            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.VEC3), "offset", new Field<>(SpawnLibCodecs.EMPTY_VEC3)).forGetter(modification -> modification.offset),
-            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.BOUNDING_BOX), "bounds", new Field<>(new BoundingBox(0, 0, 0, 0, 0, 0))).forGetter(modification -> modification.bounds),
-            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.INT), "amount").forGetter(modification -> modification.amount),
-            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN), "inverted", new Field<>(false)).forGetter(modification -> modification.inverted)
+            FieldCodec.codec(SpawnLibMetadataTypes.FLUIDS).fieldOf("fluids").forGetter(modification -> modification.fluids),
+            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.VEC3), "offset", new Field<>(SpawnLibCodecs.EMPTY_VEC3)).forGetter(modification -> modification.offset),
+            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.BOUNDING_BOX), "bounds", new Field<>(new BoundingBox(0, 0, 0, 0, 0, 0))).forGetter(modification -> modification.bounds),
+            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.INT), "amount").forGetter(modification -> modification.amount),
+            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN), "inverted", new Field<>(false)).forGetter(modification -> modification.inverted)
     ).apply(inst, RestrictToFluidSpawnModification::new));
 
     private final Field<HolderSet<Fluid>> fluids;

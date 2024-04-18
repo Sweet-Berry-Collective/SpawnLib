@@ -3,7 +3,7 @@ package dev.sweetberry.spawnlib.api.modification;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
-import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
+import dev.sweetberry.spawnlib.api.codec.FieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
@@ -23,8 +23,8 @@ public class RandomOffsetSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("random_offset");
 
     public static final Codec<RandomOffsetSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.INT), "radius").forGetter(modification -> modification.radius),
-            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN), "circular", new Field<>(false)).forGetter(modification -> modification.circular)
+            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.INT), "radius").forGetter(modification -> modification.radius),
+            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN), "circular", new Field<>(false)).forGetter(modification -> modification.circular)
     ).apply(inst, RandomOffsetSpawnModification::new));
 
     private final Optional<Field<Integer>> radius;

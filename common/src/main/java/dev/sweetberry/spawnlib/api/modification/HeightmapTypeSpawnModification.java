@@ -3,7 +3,7 @@ package dev.sweetberry.spawnlib.api.modification;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
-import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
+import dev.sweetberry.spawnlib.api.codec.FieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
@@ -20,7 +20,7 @@ public class HeightmapTypeSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("heightmap");
 
     public static final Codec<HeightmapTypeSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ExtraCodecs.strictOptionalField(SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.HEIGHTMAP_TYPE), "heightmap_type", new Field<>(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES)).forGetter(modification -> modification.heightmapType)
+            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.HEIGHTMAP_TYPE), "heightmap_type", new Field<>(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES)).forGetter(modification -> modification.heightmapType)
     ).apply(inst, HeightmapTypeSpawnModification::new));
 
     private final Field<Heightmap.Types> heightmapType;

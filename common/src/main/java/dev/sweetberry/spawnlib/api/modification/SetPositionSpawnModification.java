@@ -3,7 +3,7 @@ package dev.sweetberry.spawnlib.api.modification;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
-import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
+import dev.sweetberry.spawnlib.api.codec.FieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
@@ -18,7 +18,7 @@ public class SetPositionSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("set_position");
 
     public static final Codec<SetPositionSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.VEC3).fieldOf("position").forGetter(modification -> modification.position)
+            FieldCodec.codec(SpawnLibMetadataTypes.VEC3).fieldOf("position").forGetter(modification -> modification.position)
     ).apply(inst, SetPositionSpawnModification::new));
 
     private final Field<Vec3> position;

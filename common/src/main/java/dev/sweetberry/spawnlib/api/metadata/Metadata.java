@@ -11,15 +11,21 @@ public class Metadata<T> {
 
     public static final Codec<Metadata<?>> CODEC = SpawnLibRegistries.METADATA_TYPE.byNameCodec().dispatch(Metadata::getType, MetadataType::getInnerCodec);
 
+    public Metadata(MetadataType<T> type, T defaultValue, String key) {
+        this.type = type;
+        this.defaultValue = defaultValue;
+        this.key = key;
+    }
+
     public Metadata(MetadataType<T> type, T defaultValue) {
         this.type = type;
         this.defaultValue = defaultValue;
     }
 
     /**
-     * Sets the key of this metadata, primarily used to set the name
-     * to the key of the object when loading.
-     * @param key The new name.
+     * Sets the key of this metadata, primarily used to set the key
+     * to the key of a JSON object when loading.
+     * @param key The new key.
      */
     @ApiStatus.Internal
     public void setKey(String key) {

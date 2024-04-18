@@ -7,16 +7,22 @@ import com.mojang.serialization.DynamicOps;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.MetadataType;
 
-public class SpawnLibFieldCodec<T> implements Codec<Field<T>> {
+public class FieldCodec<T> implements Codec<Field<T>> {
 
     private final MetadataType<T> metadataType;
+    private final boolean allowsConstant;
 
-    private SpawnLibFieldCodec(MetadataType<T> metadataType) {
+    private FieldCodec(MetadataType<T> metadataType, boolean allowsConstant) {
         this.metadataType = metadataType;
+        this.allowsConstant = allowsConstant;
     }
 
-    public static <T> SpawnLibFieldCodec<T> codec(MetadataType<T> metadataType) {
-        return new SpawnLibFieldCodec<>(metadataType);
+    public static <T> FieldCodec<T> codec(MetadataType<T> metadataType) {
+        return new FieldCodec<>(metadataType, true);
+    }
+
+    public static <T> FieldCodec<T> metadataOnlyCodec(MetadataType<T> metadataType) {
+        return new FieldCodec<>(metadataType, false);
     }
 
     @Override
@@ -28,8 +34,8 @@ public class SpawnLibFieldCodec<T> implements Codec<Field<T>> {
                         .mapLeft(s -> !s.startsWith("$"))
                         .left()
                         .orElse(true)
-        ) return metadataType.codec().decode(ops, input).map(pair -> new Field<>(pair.getFirst())).map(tField -> Pair.of(tField, input));
-        // There shouldn't be an error as we we have already checked for errors above.
+        ) return !allowsConstant ? DataResult.error(() -> "Field must reference metadata.") : metadataType.codec().decode(ops, input).map(pair -> new Field<>(pair.getFirst())).map(tField -> Pair.of(tField, input));
+        // There shouldn't be an error as we have already checked for errors above.
         String metadataName = potentialMetadata.getOrThrow(false, s -> {}).substring(1);
         return DataResult.success(Pair.of(new Field<>(metadataName, this.metadataType), input));
     }

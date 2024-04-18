@@ -3,9 +3,8 @@ package dev.sweetberry.spawnlib.api.modification.logic;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
-import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
+import dev.sweetberry.spawnlib.api.codec.FieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
-import dev.sweetberry.spawnlib.api.metadata.MetadataType;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.api.modification.SpawnModification;
@@ -20,7 +19,7 @@ public record IsBlockSpawnModification(Field<BlockState> state) implements Spawn
     public static final ResourceLocation ID = SpawnLib.id("is_block");
 
     public static final Codec<IsBlockSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.BLOCK_STATE).fieldOf("state").forGetter(IsBlockSpawnModification::state)
+            FieldCodec.codec(SpawnLibMetadataTypes.BLOCK_STATE).fieldOf("state").forGetter(IsBlockSpawnModification::state)
     ).apply(inst, IsBlockSpawnModification::new));
 
 

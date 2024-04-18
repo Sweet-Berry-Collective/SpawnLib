@@ -58,23 +58,26 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
 
     @NotNull
     private static List<SpawnModification> getSpawnModifications(List<SpawnModification> partialResult, List<Metadata<Object>> metadata, List<Metadata<Object>> unused) {
-        partialResult.forEach(modification -> {
-            handleInnerBuiltInMetadata(modification, metadata, "");
-            handleInnerFieldMetadata(modification, metadata, unused);
-        });
+        handleInnerBuiltInMetadata(partialResult, metadata, "");
+        partialResult.forEach(modification -> handleInnerFieldMetadata(modification, metadata, unused));
         return partialResult;
     }
 
-    private static void handleInnerBuiltInMetadata(SpawnModification modification, List<Metadata<Object>> metadata, String prefix) {
-        Map<SpawnModification, Integer> indexMap = new HashMap<>();
-        String id = prefix + modification.getId() + "." + indexMap.getOrDefault(modification, 0);
-        if (!modification.getBuiltInMetadata().isEmpty()) {
-            modification.getBuiltInMetadata().forEach(md -> {
-                metadata.add((Metadata<Object>) modification.getBuiltInMetadata().stream().filter(md1 -> md1.getKey() == md.getKey()).findAny().get());
-                indexMap.put(modification, indexMap.getOrDefault(modification, 0));
-            });
+    private static void handleInnerBuiltInMetadata(List<SpawnModification> partialResult, List<Metadata<Object>> metadata, String prefix) {
+        Map<String, Integer> indexMap = new HashMap<>();
+        for (SpawnModification modification : partialResult) {
+            String id = prefix + modification.getId() + (indexMap.containsKey(prefix) ? "$" + indexMap.get(prefix) : "");
+            if (!modification.getBuiltInMetadata().isEmpty()) {
+                modification.getBuiltInMetadata().forEach(md -> {
+                    if (md.getKey() == null)
+                        throw new NullPointerException("Built-in metadata for " + modification.getId() + " must have a specified key.");
+                    md.setKey(id + "." + md.getKey());
+                    metadata.add((Metadata<Object>) md);
+                    indexMap.put(prefix, indexMap.getOrDefault(prefix, 0) + 1);
+                });
+            }
+            handleInnerBuiltInMetadata(modification.getInnerModifications(), metadata, id);
         }
-        modification.getInnerModifications().forEach(modification1 -> handleInnerBuiltInMetadata(modification1, metadata, id));
     }
 
     private static void handleInnerFieldMetadata(SpawnModification modification, List<Metadata<Object>> metadata, List<Metadata<Object>> unused) {

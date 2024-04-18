@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class Field<T> {
-    private final String metadataKey;
+    private String metadataKey;
     private T value;
     private MetadataType<T> metadataType;
     private Metadata<T> metadata;

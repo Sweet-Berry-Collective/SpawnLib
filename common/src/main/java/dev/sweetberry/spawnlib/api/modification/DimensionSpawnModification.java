@@ -3,7 +3,7 @@ package dev.sweetberry.spawnlib.api.modification;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
-import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
+import dev.sweetberry.spawnlib.api.codec.FieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
@@ -18,7 +18,7 @@ public class DimensionSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("in_dimension");
 
     public static final Codec<DimensionSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.DIMENSION).fieldOf("dimension").forGetter(modification -> modification.dimension)
+            FieldCodec.codec(SpawnLibMetadataTypes.DIMENSION).fieldOf("dimension").forGetter(modification -> modification.dimension)
     ).apply(inst, DimensionSpawnModification::new));
 
 

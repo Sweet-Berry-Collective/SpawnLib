@@ -3,7 +3,7 @@ package dev.sweetberry.spawnlib.api.modification.logic;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
-import dev.sweetberry.spawnlib.api.codec.SpawnLibFieldCodec;
+import dev.sweetberry.spawnlib.api.codec.FieldCodec;
 import dev.sweetberry.spawnlib.api.metadata.Field;
 import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
@@ -18,7 +18,7 @@ public record IsGamemodeSpawnModification(Field<GameType> type) implements Spawn
     public static final ResourceLocation ID = SpawnLib.id("is_gamemode");
 
     public static final Codec<IsGamemodeSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            SpawnLibFieldCodec.codec(SpawnLibMetadataTypes.GAME_TYPE).fieldOf("gamemode").forGetter(modification -> modification.type)
+            FieldCodec.codec(SpawnLibMetadataTypes.GAME_TYPE).fieldOf("gamemode").forGetter(modification -> modification.type)
     ).apply(inst, IsGamemodeSpawnModification::new));
 
     @Override
