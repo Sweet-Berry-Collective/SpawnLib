@@ -27,7 +27,7 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
         DataResult<T> metadataInput = ops.get(input, "metadata");
 
         if (metadataInput.error().isEmpty()) {
-            List<Pair<T, T>> values = ops.getMapValues(metadataInput.getOrThrow(false, (s) -> {})).getOrThrow(false, (s) -> {}).toList();
+            List<Pair<T, T>> values = ops.getMapValues(metadataInput.getOrThrow()).getOrThrow().toList();
             for (int i = 0; i < values.size(); ++i) {
                 DataResult<Pair<Metadata<?>, T>> metadataResult = Metadata.CODEC.decode(ops, values.get(i).getSecond());
                 if (metadataResult.error().isPresent()) {
@@ -35,7 +35,7 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
                     return DataResult.error(() -> "Could not decode metadata at index [" + finalI + "]. " + metadataResult.error().get().message());
                 }
                 Metadata<?> individualMetadata = metadataResult.result().get().getFirst();
-                String key = ops.getStringValue(values.get(i).getFirst()).getOrThrow(false, s -> {});
+                String key = ops.getStringValue(values.get(i).getFirst()).getOrThrow();
                 if (key.contains(".")) {
                     return DataResult.error(() -> "Metadata is not allowed to utilise '.' as it is reserved for built-in metadata.");
                 }
@@ -111,13 +111,13 @@ public class ModifiedSpawnCodec implements Codec<ModifiedSpawn> {
         Map<T, T> metadataMap = new HashMap<>();
         for (Metadata<Object> entry : input.getMetadata()) {
             T key = ops.createString(entry.getKey());
-            T value = Metadata.CODEC.encodeStart(ops, entry).getOrThrow(false, s -> {});
+            T value = Metadata.CODEC.encodeStart(ops, entry).getOrThrow();
 
             metadataMap.put(key, value);
         }
 
         finalMap.put(ops.createString("metadata"), ops.createMap(metadataMap));
-        finalMap.put(ops.createString("functions"), SpawnModification.CODEC.listOf().encodeStart(ops, input.getModifications()).getOrThrow(false, (s) -> {}));
+        finalMap.put(ops.createString("functions"), SpawnModification.CODEC.listOf().encodeStart(ops, input.getModifications()).getOrThrow());
 
         return DataResult.success(ops.createMap(finalMap));
     }

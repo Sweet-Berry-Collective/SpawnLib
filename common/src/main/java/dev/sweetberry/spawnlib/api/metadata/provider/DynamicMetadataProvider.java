@@ -31,7 +31,7 @@ public class DynamicMetadataProvider<TOps> implements MetadataProvider {
         if (scope != null)
             return Optional.empty();
         Optional<T> value = Optional.empty();
-        var baseMap = ops.getMap(input).getOrThrow(false, s -> {});
+        var baseMap = ops.getMap(input).getOrThrow();
         var priorityMap = ops.getMap(baseMap.get(priority.getSerializedName()));
         if (priorityMap.result().isEmpty())
             return Optional.empty();
@@ -44,9 +44,9 @@ public class DynamicMetadataProvider<TOps> implements MetadataProvider {
 
     private <T> Optional<T> getInnerData(Pair<TOps, TOps> entry, String id, MetadataType<T> metadataType) {
         String[] splitId = id.split("\\.");
-        String idToCheck = ops.getStringValue(entry.getFirst()).getOrThrow(false, s -> {});
+        String idToCheck = ops.getStringValue(entry.getFirst()).getOrThrow();
         if (splitId.length == 1 && idToCheck.equals(id)) {
-            MapLike<TOps> mapLike = ops.getMap(entry.getSecond()).getOrThrow(false, s -> {});
+            MapLike<TOps> mapLike = ops.getMap(entry.getSecond()).getOrThrow();
             return metadataType.codec().decode(ops, mapLike.get("value")).result().map(Pair::getFirst);
         }
         var innerMap = ops.getMap(entry.getSecond());

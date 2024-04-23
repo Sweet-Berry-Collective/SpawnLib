@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification.logic;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
@@ -13,7 +13,7 @@ import java.util.List;
 public record NotSpawnModification(SpawnModification condition) implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("not");
 
-    public static final Codec<NotSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+    public static final MapCodec<NotSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             SpawnModification.CODEC.fieldOf("condition").forGetter(NotSpawnModification::condition)
     ).apply(inst, NotSpawnModification::new));
 
@@ -28,7 +28,7 @@ public record NotSpawnModification(SpawnModification condition) implements Spawn
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 }

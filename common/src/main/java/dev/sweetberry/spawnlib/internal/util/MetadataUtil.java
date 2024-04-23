@@ -53,8 +53,8 @@ public class MetadataUtil {
                 }
             }
             return tempTag;
-        }).getOrThrow(false, s -> SpawnLib.LOGGER.warn("Failed to encode value '{}' to attachment. {}", metadata.getKey(), s));
-        innerTag.put(priority.getSerializedName(), metadataTag);
+        }).resultOrPartial(s -> SpawnLib.LOGGER.warn("Failed to encode value '{}' to attachment. {}", metadata.getKey(), s));
+        metadataTag.ifPresent(compoundTag -> innerTag.put(priority.getSerializedName(), compoundTag));
         return metadataTags.get(prefix);
     }
 }

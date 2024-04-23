@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.FieldCodec;
@@ -13,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
@@ -25,12 +24,12 @@ import java.util.Optional;
 public class RestrictToBlockSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("restrict_to_block");
 
-    public static final Codec<RestrictToBlockSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+    public static final MapCodec<RestrictToBlockSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             FieldCodec.codec(SpawnLibMetadataTypes.BLOCKS).fieldOf("blocks").forGetter(modification -> modification.blocks),
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.VEC3), "offset", new Field<>(SpawnLibCodecs.EMPTY_VEC3)).forGetter(modification -> modification.offset),
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.BOUNDING_BOX), "bounds", new Field<>(new BoundingBox(0, 0, 0, 0, 0, 0))).forGetter(modification -> modification.bounds),
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.INT), "amount").forGetter(modification -> modification.amount),
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN), "inverted", new Field<>(false)).forGetter(modification -> modification.inverted)
+            FieldCodec.codec(SpawnLibMetadataTypes.VEC3).optionalFieldOf("offset", new Field<>(SpawnLibCodecs.EMPTY_VEC3)).forGetter(modification -> modification.offset),
+            FieldCodec.codec(SpawnLibMetadataTypes.BOUNDING_BOX).optionalFieldOf("bounds", new Field<>(new BoundingBox(0, 0, 0, 0, 0, 0))).forGetter(modification -> modification.bounds),
+            FieldCodec.codec(SpawnLibMetadataTypes.INT).optionalFieldOf("amount").forGetter(modification -> modification.amount),
+            FieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN).optionalFieldOf("inverted", new Field<>(false)).forGetter(modification -> modification.inverted)
     ).apply(inst, RestrictToBlockSpawnModification::new));
 
     private final Field<HolderSet<Block>> blocks;
@@ -86,7 +85,7 @@ public class RestrictToBlockSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 

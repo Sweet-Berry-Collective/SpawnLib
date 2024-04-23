@@ -35,7 +35,8 @@ public class WorldSpawnAttachment {
     private final List<MetadataProvider> providers;
 
     public WorldSpawnAttachment(Optional<Holder<ModifiedSpawn>> spawn, List<MetadataProvider> providers) {
-        this.spawn = spawn.orElse(SpawnLib.getHelper().getServer().registryAccess().registry(SpawnLibRegistryKeys.SPAWN).orElseThrow().getHolderOrThrow(SpawnLibRegistryKeys.DEFAULT_SPAWN));
+        // TODO: Fix server being null when loading world.
+        this.spawn = spawn.orElseGet(() -> SpawnLib.getHelper().getServer().registryAccess().registry(SpawnLibRegistryKeys.SPAWN).orElseThrow().getHolderOrThrow(SpawnLibRegistryKeys.DEFAULT_SPAWN));
         this.providers = getOrCreateProviders(providers);
     }
 
@@ -52,7 +53,7 @@ public class WorldSpawnAttachment {
     }
 
     private void createMetadataProviders(Holder<ModifiedSpawn> spawn, Tag tag) {
-        List<MetadataProvider> providers = new MetadataProviderCodec(SpawnPriority.GLOBAL_WORLD).decode(NbtOps.INSTANCE, tag).getOrThrow(false, s -> {}).getFirst();
+        List<MetadataProvider> providers = new MetadataProviderCodec(SpawnPriority.GLOBAL_WORLD).decode(NbtOps.INSTANCE, tag).getOrThrow().getFirst();
         MetadataUtil.createProvidersForPriority(providers, SpawnPriority.GLOBAL_WORLD, spawn);
     }
 

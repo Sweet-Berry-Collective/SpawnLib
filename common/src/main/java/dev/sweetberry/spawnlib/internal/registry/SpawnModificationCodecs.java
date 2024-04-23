@@ -1,14 +1,12 @@
 package dev.sweetberry.spawnlib.internal.registry;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.sweetberry.spawnlib.api.modification.*;
 import dev.sweetberry.spawnlib.api.modification.logic.*;
-import dev.sweetberry.spawnlib.internal.SpawnLib;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
 public class SpawnModificationCodecs {
-    public static void registerAll(RegistrationCallback<Codec<? extends SpawnModification>> callback) {
+    public static void registerAll(RegistrationCallback<MapCodec<? extends SpawnModification>> callback) {
         register(callback, DimensionSpawnModification.ID, DimensionSpawnModification.CODEC);
         register(callback, FindGroundSpawnModification.ID, FindGroundSpawnModification.CODEC);
         register(callback, HeightmapTypeSpawnModification.ID, HeightmapTypeSpawnModification.CODEC);
@@ -37,7 +35,7 @@ public class SpawnModificationCodecs {
         register(callback, SnapToCenterSpawnModification.ID, SnapToCenterSpawnModification.CODEC);
     }
 
-    public static void register(RegistrationCallback<Codec<? extends SpawnModification>> callback, ResourceLocation id, Codec<? extends SpawnModification> codec) {
+    public static void register(RegistrationCallback<MapCodec<? extends SpawnModification>> callback, ResourceLocation id, MapCodec<? extends SpawnModification> codec) {
         callback.register(SpawnLibRegistries.SPAWN_MODIFICATION_CODECS, id, codec);
     }
 }

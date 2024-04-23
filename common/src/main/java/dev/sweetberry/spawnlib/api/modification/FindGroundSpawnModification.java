@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
@@ -13,7 +13,7 @@ import java.util.List;
 public class FindGroundSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("find_ground");
 
-    public static final Codec<FindGroundSpawnModification> CODEC = Codec.unit(FindGroundSpawnModification::new);
+    public static final MapCodec<FindGroundSpawnModification> CODEC = MapCodec.unit(FindGroundSpawnModification::new);
 
     public FindGroundSpawnModification() {}
 
@@ -34,7 +34,7 @@ public class FindGroundSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 

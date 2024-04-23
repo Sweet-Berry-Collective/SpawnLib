@@ -36,21 +36,6 @@ public abstract class Mixin_PlayerList {
     @Unique
     private SpawnContext spawnlib$spawn;
 
-    @Shadow @Final
-    private List<ServerPlayer> players;
-
-    @Shadow @Final
-    private MinecraftServer server;
-
-    @Shadow @Final
-    private Map<UUID, ServerPlayer> playersByUUID;
-
-    @Shadow
-    public abstract void sendLevelInfo(ServerPlayer $$0, ServerLevel $$1);
-
-    @Shadow
-    public abstract void sendPlayerPermissionLevel(ServerPlayer $$0);
-
     @Inject(
             method = "placeNewPlayer",
             at = @At(
@@ -59,8 +44,8 @@ public abstract class Mixin_PlayerList {
                     shift = At.Shift.AFTER
             )
     )
-    private void spawnlib$setSpawn(Connection $$0, ServerPlayer player, CommonListenerCookie $$2, CallbackInfo ci, @Local CompoundTag playerData) {
-        if (playerData != null)
+    private void spawnlib$setSpawn(Connection $$0, ServerPlayer player, CommonListenerCookie $$2, CallbackInfo ci, @Local Optional playerData) {
+        if (playerData.isEmpty())
             return;
         var spawn = SpawnContext.getSpawn(player);
         if (spawn == null) return;

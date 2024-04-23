@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification.logic;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.api.modification.SpawnModification;
@@ -12,7 +12,7 @@ import java.util.List;
 public class AlwaysSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("always");
 
-    public static final Codec<AlwaysSpawnModification> CODEC = Codec.unit(AlwaysSpawnModification::new);
+    public static final MapCodec<AlwaysSpawnModification> CODEC = MapCodec.unit(AlwaysSpawnModification::new);
 
     @Override
     public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
@@ -25,7 +25,7 @@ public class AlwaysSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 }

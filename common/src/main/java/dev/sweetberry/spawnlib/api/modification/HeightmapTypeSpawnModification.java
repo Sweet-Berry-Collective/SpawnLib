@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.FieldCodec;
@@ -10,7 +10,6 @@ import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
@@ -19,8 +18,8 @@ import java.util.List;
 public class HeightmapTypeSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("heightmap");
 
-    public static final Codec<HeightmapTypeSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.HEIGHTMAP_TYPE), "heightmap_type", new Field<>(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES)).forGetter(modification -> modification.heightmapType)
+    public static final MapCodec<HeightmapTypeSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            FieldCodec.codec(SpawnLibMetadataTypes.HEIGHTMAP_TYPE).optionalFieldOf("heightmap_type", new Field<>(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES)).forGetter(modification -> modification.heightmapType)
     ).apply(inst, HeightmapTypeSpawnModification::new));
 
     private final Field<Heightmap.Types> heightmapType;
@@ -45,7 +44,7 @@ public class HeightmapTypeSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 

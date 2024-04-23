@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
@@ -13,7 +13,7 @@ import java.util.List;
 public class SnapToCenterSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("snap_to_center");
 
-    public static final Codec<SnapToCenterSpawnModification> CODEC = Codec.unit(SnapToCenterSpawnModification::new);
+    public static final MapCodec<SnapToCenterSpawnModification> CODEC = MapCodec.unit(SnapToCenterSpawnModification::new);
 
     @Override
     public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
@@ -30,7 +30,7 @@ public class SnapToCenterSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 }

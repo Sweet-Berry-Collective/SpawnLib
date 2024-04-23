@@ -1,6 +1,7 @@
 package dev.sweetberry.spawnlib.api.metadata;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -11,8 +12,8 @@ public record MetadataType<T>(Class<T> typeClass, Codec<T> codec) {
     }
 
     @ApiStatus.Internal
-    public Codec<Metadata<T>> getInnerCodec() {
-        return RecordCodecBuilder.create(inst -> inst.group(
+    public MapCodec<Metadata<T>> getInnerCodec() {
+        return RecordCodecBuilder.mapCodec(inst -> inst.group(
                 codec.fieldOf("default").forGetter(Metadata::getDefaultValue)
         ).apply(inst, t1 -> new Metadata<>(this, t1)));
     }

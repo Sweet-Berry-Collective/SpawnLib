@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification.logic;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.CasesCodec;
@@ -18,7 +18,7 @@ import java.util.List;
 public class MatchSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("match");
 
-    public static final Codec<MatchSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+    public static final MapCodec<MatchSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             TypeAndFieldCodec.metadataOnlyCodec().fieldOf("input").forGetter(modification -> modification.value),
             Metadata.CODEC.fieldOf("output").forGetter(modification -> modification.output),
             CasesCodec.codec("cases", "input", "output").forGetter(modification -> modification.cases),
@@ -48,7 +48,7 @@ public class MatchSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 

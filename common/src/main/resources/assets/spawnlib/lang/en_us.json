@@ -11,5 +11,7 @@
   "commands.spawnlib.clear.fail.single": "%s does not have a %s spawn.",
   "commands.spawnlib.clear.fail.multiple": "All of the specified players do not have a %s spawn.",
   "commands.spawnlib.clear.success.single": "Cleared %s spawn for player %s.",
-  "commands.spawnlib.clear.success.multiple": "Cleared %s spawn for %s players."
+  "commands.spawnlib.clear.success.multiple": "Cleared %s spawn for %s players.",
+
+  "commands.spawnlib.spawn.invalid": "There is no spawn %s"
 }

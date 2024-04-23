@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class WorldSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("world_spawn");
-    public static final Codec<WorldSpawnModification> CODEC = Codec.unit(WorldSpawnModification::new);
+    public static final MapCodec<WorldSpawnModification> CODEC = MapCodec.unit(WorldSpawnModification::new);
 
     @Override
     public boolean modify(SpawnContext context, List<MetadataProvider> providers) {
@@ -24,7 +24,7 @@ public class WorldSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 }

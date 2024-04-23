@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.FieldCodec;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class OffsetPositionSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("offset_position");
 
-    public static final Codec<OffsetPositionSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+    public static final MapCodec<OffsetPositionSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             FieldCodec.codec(SpawnLibMetadataTypes.VEC3).fieldOf("position").forGetter(modification -> modification.position)
     ).apply(inst, OffsetPositionSpawnModification::new));
 
@@ -63,7 +63,7 @@ public class OffsetPositionSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 

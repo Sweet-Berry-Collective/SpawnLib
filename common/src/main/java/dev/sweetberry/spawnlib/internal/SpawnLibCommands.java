@@ -180,26 +180,26 @@ public class SpawnLibCommands {
     private static void logSetSuccess(CommandContext<CommandSourceStack> context, Collection<ServerPlayer> players, Holder<ModifiedSpawn> spawn, SpawnPriority priority) {
         String priorityName = priority == SpawnPriority.LOCAL_PLAYER ? "local" : "global";
         if (players.isEmpty()) {
-            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.set.success.world", "Set world spawn to " + spawn.unwrapKey().get().location() + ".", spawn.unwrapKey().get().location()), true);
+            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.set.success.world", "Set world spawn to " + spawn.unwrapKey().get().location() + ".", spawn.unwrapKey().get().location().toString()), true);
             return;
         }
         if (players.size() > 1)
-            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.set.success.multiple", "Set " + priorityName + " spawn to " + spawn.unwrapKey().get().location() + " for " + players.size() + " players.", priorityName, spawn.unwrapKey().get().location(), players.size()), true);
+            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.set.success.multiple", "Set " + priorityName + " spawn to " + spawn.unwrapKey().get().location() + " for " + players.size() + " players.", priorityName, spawn.unwrapKey().get().location().toString(), players.size()), true);
         else
-            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.set.success.single", "Set " + priorityName + " spawn to " + spawn.unwrapKey().get().location() + " for " + players.stream().findAny().get().getScoreboardName() + ".", priorityName, spawn.unwrapKey().get().location(), players.stream().findAny().get().getScoreboardName()), true);
+            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.set.success.single", "Set " + priorityName + " spawn to " + spawn.unwrapKey().get().location() + " for " + players.stream().findAny().get().getScoreboardName() + ".", priorityName, spawn.unwrapKey().get().location().toString(), players.stream().findAny().get().getScoreboardName()), true);
     }
 
     private static void logGetSuccess(CommandContext<CommandSourceStack> context, @Nullable ServerPlayer player, Holder<ModifiedSpawn> spawn, SpawnPriority priority) {
         String priorityName = priority == SpawnPriority.LOCAL_PLAYER ? "local" : "global";
         if (player == null) {
             if (spawn != null && spawn.isBound())
-                context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.get.success.world", "The current world spawn is " + spawn.unwrapKey().get().location() + ".", spawn.unwrapKey().get().location()), true);
+                context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.get.success.world", "The current world spawn is " + spawn.unwrapKey().get().location() + ".", spawn.unwrapKey().get().location().toString()), true);
             else
                 context.getSource().sendFailure(Component.translatableWithFallback("commands.spawnlib.get.fail.world", "The current world does not have a spawn."));
             return;
         }
         if (spawn != null && spawn.isBound())
-            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.get.success.player", "The current " + priorityName + " spawn for " + player.getScoreboardName() + " is " + spawn.unwrapKey().get().location() + ".", priorityName, player.getScoreboardName(), spawn.unwrapKey().get().location()), true);
+            context.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.spawnlib.get.success.player", "The current " + priorityName + " spawn for " + player.getScoreboardName() + " is " + spawn.unwrapKey().get().location() + ".", priorityName, player.getScoreboardName(), spawn.unwrapKey().get().location().toString()), true);
         else
             context.getSource().sendFailure(Component.translatableWithFallback("commands.spawnlib.get.fail.player",  player.getScoreboardName() + " does not have a " + priorityName + "spawn.", player.getScoreboardName(), priorityName));
     }
@@ -223,7 +223,7 @@ public class SpawnLibCommands {
         ResourceKey<?> key = context.getArgument(value, ResourceKey.class);
         Optional<ResourceKey<ModifiedSpawn>> optionalKey = key.cast(SpawnLibRegistryKeys.SPAWN);
         ResourceKey<ModifiedSpawn> spawnKey = optionalKey.orElseThrow(() -> new DynamicCommandExceptionType(
-                s -> Component.translatableWithFallback("commands.spawnlib.spawn.invalid", "There is no spawn with type \"" + s + "\"", s)
+                s -> Component.translatableWithFallback("commands.spawnlib.spawn.invalid", "There is no spawn " + s, s)
         ).create(key));
         return context.getSource().registryAccess().registryOrThrow(SpawnLibRegistryKeys.SPAWN).getHolderOrThrow(spawnKey);
     }

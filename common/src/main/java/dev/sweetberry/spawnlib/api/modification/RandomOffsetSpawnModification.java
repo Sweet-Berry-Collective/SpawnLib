@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.FieldCodec;
@@ -10,7 +10,6 @@ import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
@@ -22,9 +21,9 @@ import java.util.Optional;
 public class RandomOffsetSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("random_offset");
 
-    public static final Codec<RandomOffsetSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.INT), "radius").forGetter(modification -> modification.radius),
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN), "circular", new Field<>(false)).forGetter(modification -> modification.circular)
+    public static final MapCodec<RandomOffsetSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            FieldCodec.codec(SpawnLibMetadataTypes.INT).optionalFieldOf("radius").forGetter(modification -> modification.radius),
+            FieldCodec.codec(SpawnLibMetadataTypes.BOOLEAN).optionalFieldOf("circular", new Field<>(false)).forGetter(modification -> modification.circular)
     ).apply(inst, RandomOffsetSpawnModification::new));
 
     private final Optional<Field<Integer>> radius;
@@ -63,7 +62,7 @@ public class RandomOffsetSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 

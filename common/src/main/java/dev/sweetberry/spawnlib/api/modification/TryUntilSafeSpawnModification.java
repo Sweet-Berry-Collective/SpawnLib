@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.SpawnPriority;
@@ -12,7 +12,6 @@ import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -24,8 +23,8 @@ import java.util.Optional;
 public class TryUntilSafeSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("try_until_safe");
 
-    public static final Codec<TryUntilSafeSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.INT), "max_iterations", new Field<>(64)).forGetter(modification -> modification.maxIterations),
+    public static final MapCodec<TryUntilSafeSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            FieldCodec.codec(SpawnLibMetadataTypes.INT).optionalFieldOf("max_iterations", new Field<>(64)).forGetter(modification -> modification.maxIterations),
             SpawnModification.CODEC.listOf().fieldOf("functions").forGetter(TryUntilSafeSpawnModification::getFunctions)
     ).apply(inst, TryUntilSafeSpawnModification::new));
 
@@ -67,7 +66,7 @@ public class TryUntilSafeSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 

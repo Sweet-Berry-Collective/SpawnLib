@@ -1,21 +1,20 @@
 package dev.sweetberry.spawnlib.api.modification.logic;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.api.modification.SpawnModification;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 
 import java.util.List;
 
 public record BlockSpawnModification(List<SpawnModification> functions) implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("block");
 
-    public static final Codec<BlockSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ExtraCodecs.strictOptionalField(SpawnModification.CODEC.listOf(), "functions", List.of()).forGetter(BlockSpawnModification::functions)
+    public static final MapCodec<BlockSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            SpawnModification.CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(BlockSpawnModification::functions)
     ).apply(inst, BlockSpawnModification::new));
 
 
@@ -33,7 +32,7 @@ public record BlockSpawnModification(List<SpawnModification> functions) implemen
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 }

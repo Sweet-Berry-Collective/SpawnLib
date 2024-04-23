@@ -43,7 +43,7 @@ public class CasesCodec extends MapCodec<List<Case<Object, Object>>> {
         if (streamResult.error().isPresent()) {
             return DataResult.error(() -> key + " is not present or not an array.");
         }
-        var stream = streamResult.get().left();
+        var stream = streamResult.result();
         stream.orElse(Stream.empty()).forEachOrdered(t1 -> {
             var mapResult = ops.getMap(t1).resultOrPartial(s -> SpawnLib.LOGGER.error("Failed to decode case. " + s + "."));
             if (mapResult.isEmpty()) {

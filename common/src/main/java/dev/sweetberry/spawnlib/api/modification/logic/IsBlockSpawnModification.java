@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification.logic;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.FieldCodec;
@@ -18,7 +18,7 @@ import java.util.List;
 public record IsBlockSpawnModification(Field<BlockState> state) implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("is_block");
 
-    public static final Codec<IsBlockSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+    public static final MapCodec<IsBlockSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             FieldCodec.codec(SpawnLibMetadataTypes.BLOCK_STATE).fieldOf("state").forGetter(IsBlockSpawnModification::state)
     ).apply(inst, IsBlockSpawnModification::new));
 
@@ -35,7 +35,7 @@ public record IsBlockSpawnModification(Field<BlockState> state) implements Spawn
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return null;
     }
 }

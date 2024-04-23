@@ -13,6 +13,7 @@ import dev.sweetberry.spawnlib.internal.registry.SpawnModificationCodecs;
 import net.minecraft.core.Holder;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -38,7 +39,7 @@ public class SpawnLibNeoForge {
         SpawnLib.init(new NeoForgePlatformHelper());
     }
 
-    @Mod.EventBusSubscriber(modid = SpawnLib.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = SpawnLib.MODID, bus = EventBusSubscriber.Bus.MOD)
     public static class ModEvents {
         @SubscribeEvent
         public static void registerRegistries(NewRegistryEvent event) {
@@ -76,7 +77,7 @@ public class SpawnLibNeoForge {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = SpawnLib.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    @EventBusSubscriber(modid = SpawnLib.MODID, bus = EventBusSubscriber.Bus.GAME)
     public static class ForgeEvents {
         @SubscribeEvent
         public static void registerCommands(RegisterCommandsEvent event) {

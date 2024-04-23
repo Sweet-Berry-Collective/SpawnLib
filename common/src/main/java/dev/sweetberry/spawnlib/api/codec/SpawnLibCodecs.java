@@ -6,16 +6,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnPriority;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 
 public class SpawnLibCodecs {
     private static final Codec<Vec3> OPTIONAL_VEC3_OPTIONAL = RecordCodecBuilder.create(inst -> inst.group(
-            ExtraCodecs.strictOptionalField(Codec.DOUBLE, "x", Double.NaN).forGetter(Vec3::x),
-            ExtraCodecs.strictOptionalField(Codec.DOUBLE, "y", Double.NaN).forGetter(Vec3::y),
-            ExtraCodecs.strictOptionalField(Codec.DOUBLE, "z", Double.NaN).forGetter(Vec3::z)
+            Codec.DOUBLE.optionalFieldOf("x", Double.NaN).forGetter(Vec3::x),
+            Codec.DOUBLE.optionalFieldOf("y", Double.NaN).forGetter(Vec3::y),
+            Codec.DOUBLE.optionalFieldOf("z", Double.NaN).forGetter(Vec3::z)
     ).apply(inst, Vec3::new));
 
     public static final Vec3 EMPTY_VEC3 = new Vec3(Double.NaN, Double.NaN, Double.NaN);

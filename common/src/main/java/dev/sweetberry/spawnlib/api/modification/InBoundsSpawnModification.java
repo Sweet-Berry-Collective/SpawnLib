@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.codec.FieldCodec;
@@ -9,7 +9,6 @@ import dev.sweetberry.spawnlib.api.metadata.SpawnLibMetadataTypes;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -19,9 +18,9 @@ import java.util.Optional;
 public class InBoundsSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("in_bounds");
 
-    public static final Codec<InBoundsSpawnModification> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.VEC3), "min").forGetter(modification -> modification.min),
-            ExtraCodecs.strictOptionalField(FieldCodec.codec(SpawnLibMetadataTypes.VEC3), "max").forGetter(modification -> modification.max)
+    public static final MapCodec<InBoundsSpawnModification> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            FieldCodec.codec(SpawnLibMetadataTypes.VEC3).optionalFieldOf("min").forGetter(modification -> modification.min),
+            FieldCodec.codec(SpawnLibMetadataTypes.VEC3).optionalFieldOf("max").forGetter(modification -> modification.max)
     ).apply(inst, InBoundsSpawnModification::new));
 
     private Optional<Field<Vec3>> min;
@@ -91,7 +90,7 @@ public class InBoundsSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 

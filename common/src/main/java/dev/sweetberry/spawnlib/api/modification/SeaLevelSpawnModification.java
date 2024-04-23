@@ -1,6 +1,6 @@
 package dev.sweetberry.spawnlib.api.modification;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.metadata.provider.MetadataProvider;
 import dev.sweetberry.spawnlib.internal.SpawnLib;
@@ -12,7 +12,7 @@ import java.util.List;
 public class SeaLevelSpawnModification implements SpawnModification {
     public static final ResourceLocation ID = SpawnLib.id("sea_level");
 
-    public static final Codec<SeaLevelSpawnModification> CODEC = Codec.unit(SeaLevelSpawnModification::new);
+    public static final MapCodec<SeaLevelSpawnModification> CODEC = MapCodec.unit(SeaLevelSpawnModification::new);
 
     public SeaLevelSpawnModification() {
     }
@@ -29,7 +29,7 @@ public class SeaLevelSpawnModification implements SpawnModification {
     }
 
     @Override
-    public Codec<? extends SpawnModification> getCodec() {
+    public MapCodec<? extends SpawnModification> getCodec() {
         return CODEC;
     }
 }

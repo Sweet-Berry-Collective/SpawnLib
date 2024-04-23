@@ -57,7 +57,7 @@ public class PlayerSpawnsAttachment {
     }
 
     private void createMetadataProviders(Holder<ModifiedSpawn> spawn, SpawnPriority priority, Tag tag) {
-        List<MetadataProvider> providers = new MetadataProviderCodec(priority).decode(NbtOps.INSTANCE, tag).getOrThrow(false, s -> {}).getFirst();
+        List<MetadataProvider> providers = new MetadataProviderCodec(priority).decode(NbtOps.INSTANCE, tag).getOrThrow().getFirst();
         MetadataUtil.createProvidersForPriority(providers, priority, spawn);
     }
 

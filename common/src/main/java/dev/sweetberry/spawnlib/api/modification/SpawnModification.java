@@ -1,6 +1,7 @@
 package dev.sweetberry.spawnlib.api.modification;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.sweetberry.spawnlib.api.SpawnContext;
 import dev.sweetberry.spawnlib.api.SpawnLibTags;
 import dev.sweetberry.spawnlib.api.metadata.Field;
@@ -25,7 +26,7 @@ public interface SpawnModification {
 
     ResourceLocation getId();
 
-    Codec<? extends SpawnModification> getCodec();
+    MapCodec<? extends SpawnModification> getCodec();
 
     /**
      * A list of fields within this SpawnModification.
