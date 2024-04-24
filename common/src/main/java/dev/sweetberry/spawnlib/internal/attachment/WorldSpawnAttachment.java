@@ -46,7 +46,7 @@ public class WorldSpawnAttachment {
 
     private List<MetadataProvider> getOrCreateProviders(List<MetadataProvider> providers) {
         if (providers.isEmpty()) {
-            MetadataUtil.createProvidersForPriority(providers, SpawnPriority.GLOBAL_PLAYER, spawn);
+            MetadataUtil.createProvidersForPriority(providers, SpawnPriority.GLOBAL_WORLD, spawn);
         }
         validateMetadata(providers);
         return providers;
