@@ -33,6 +33,7 @@ public class SpawnModificationCodecs {
         register(callback, WorldSpawnModification.ID, WorldSpawnModification.CODEC);
         register(callback, IsGamemodeSpawnModification.ID, IsGamemodeSpawnModification.CODEC);
         register(callback, SnapToCenterSpawnModification.ID, SnapToCenterSpawnModification.CODEC);
+        register(callback, MatchSpawnModification.ID, MatchSpawnModification.CODEC);
     }
 
     public static void register(RegistrationCallback<MapCodec<? extends SpawnModification>> callback, ResourceLocation id, MapCodec<? extends SpawnModification> codec) {
