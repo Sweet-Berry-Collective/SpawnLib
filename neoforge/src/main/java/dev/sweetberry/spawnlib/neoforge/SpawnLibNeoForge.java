@@ -59,7 +59,7 @@ public class SpawnLibNeoForge {
                 event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, WorldSpawnAttachment.ID, () -> WORLD_ATTACHMENT);
             } else if (event.getRegistryKey() == SpawnLibRegistryKeys.METADATA_TYPE)
                 register(event, SpawnLibMetadataTypes::registerAll);
-            if (event.getRegistryKey() == SpawnLibRegistryKeys.SPAWN_MODIFICATION_CODEC)
+            else if (event.getRegistryKey() == SpawnLibRegistryKeys.SPAWN_MODIFICATION_CODEC)
                 register(event, SpawnModificationCodecs::registerAll);
         }
 
